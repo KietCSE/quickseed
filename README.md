@@ -41,6 +41,7 @@ Run project
 ```sh
 python main.py
 ```
+**Notice**: you need create a `.env` file with all variable in `.env.example` but with actual value, you also need a tracker server for everything go well 
 
 
 ## Project structure
