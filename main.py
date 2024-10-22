@@ -2,7 +2,7 @@ import os
 import aiohttp
 import asyncio 
 from auth import login, register
-from add_delete_ls import add
+from add_delete_ls import add, delete, ls
 
 def text_color(command, color): 
     match color: 
@@ -14,7 +14,7 @@ def text_color(command, color):
 
 def show_help():
     """Display usage instructions and available commands"""
-    help_text = f"""
+    help_text = """
     Available commands:
     -------------------------
     add             - Publish your documents into network
@@ -45,8 +45,10 @@ async def process_command(command):
     match arg[0]:
         case "add":
             await add(arg[1])
-        case "stop":
-            print("Stopping torrent download...")
+        case "delete":
+            await delete(arg[1])
+        case "ls": 
+            await ls("123")
         case "help":
             show_help()
         case "clear":

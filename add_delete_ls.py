@@ -72,15 +72,48 @@ async def add(path):
     metainfo, filename = create_metainfo(path)
     response = await postAPI(f'{HOST}/metainfo', metainfo)
     if (response.get("status")): 
-        print(f"Added {metainfo.get("hashCode")}  {filename}")
-        return True
+        print(f"Added  {metainfo.get("hashCode")}  {filename}")
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
 
+async def delete(code): 
+    data =  {
+        "peerId" : "123", 
+        "hashCode": code
+    }
+    response = await postAPI(f'{HOST}/delete', data)
+    if (response.get("status")): 
+        print(f"{response.get('message')}")
+    else: 
+        print(f"\033[1;31m{response.get('message')}\033[0m")
+
+
+async def ls(peeerId): 
+    response = await fetchAPI(f'{HOST}/list/123')
+    if (response.get("status")): 
+        # Định nghĩa chiều dài cố định cho mỗi cột
+        file_name_width = 20
+        hash_code_width = 45
+        time_save_width = 30
+
+        print(f"{'File Name'.ljust(file_name_width)} {'Hash Code'.ljust(hash_code_width)} {'Time Save'.ljust(time_save_width)}")
+        print('-' * (file_name_width + hash_code_width + time_save_width))
+
+        for data in response.get("repo"): 
+            file_name = data.get("fileName")
+            hash_code = data.get("hashCode")
+            time_save = data.get("timeSave")
+            
+            print(f"{file_name.ljust(file_name_width)} {hash_code.ljust(hash_code_width)} {time_save.ljust(time_save_width)}")
+    else: 
+        print(f"\033[1;31m{response.get('message')}\033[0m")
+
+
+
 async def main():
-    path = input(">> ")
-    await add(path)
+    # path = input(">> ")
+    await ls(123)
 
 if __name__ == '__main__': 
     asyncio.run(main())
