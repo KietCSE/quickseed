@@ -1,8 +1,11 @@
 import os
 import aiohttp
 import asyncio 
+import signal
+import threading
 from auth import login, register
-
+from add_delete_ls import add, delete, ls
+from get_seed_peers import get
 
 def text_color(command, color): 
     match color: 
@@ -14,7 +17,7 @@ def text_color(command, color):
 
 def show_help():
     """Display usage instructions and available commands"""
-    help_text = f"""
+    help_text = """
     Available commands:
     -------------------------
     add             - Publish your documents into network
@@ -39,13 +42,18 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def process_command(command):
+async def process_command(command):
+    args = command.split()
     """Process the command entered by the user"""
-    match command:
-        case "start":
-            print("Starting torrent download...")
-        case "stop":
-            print("Stopping torrent download...")
+    match args[0]:
+        case "add":
+            await add(args[1])
+        case "delete":
+            await delete(args[1])
+        case "ls": 
+            await ls("123")
+        case "get": 
+            await get(args[1])
         case "help":
             show_help()
         case "clear":
@@ -62,20 +70,24 @@ async def main():
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
                 if command == 'exit': break
-                if command: process_command(command)
+                if command: await process_command(command)
     elif choice == '2':
         if await login():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
-                if command == 'exit': break
-                if command: process_command(command)
+
+                # stop current process
+                if command == 'exit': self_kill()    
+                if command: await process_command(command)
     elif choice.lower() == 'exit':
         print("Exiting the program.")
     else:
         print(text_color("Invalid choice. Please choose 1 or 2.", "red"))
-    
 
+
+def self_kill():
+    os.kill(os.getpid(), signal.SIGKILL)
 
 
 if __name__ == "__main__":
@@ -83,4 +95,5 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\nExiting program...")
+        pass
 

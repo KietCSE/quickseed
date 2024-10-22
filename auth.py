@@ -1,6 +1,7 @@
 from fetch_api import *
 from config import HOST
 import getpass
+import state as var
 
 async def login():
     while True: 
@@ -15,6 +16,7 @@ async def login():
         response = await postAPI(f'{HOST}/login', data)
         if (response.get("status")): 
             print("Login successfully!")
+            var.PEER_ID = response.get("peerId")
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")
@@ -38,6 +40,7 @@ async def register():
         response = await postAPI(f'{HOST}/register', data)
         if (response.get("status")): 
             print("Register successfully!")
+            PEER_ID = response.get("peerId")
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")
