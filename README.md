@@ -2,28 +2,29 @@
 
 Build a simple CLI torrent-app for P2P file sharing 
 
-## Run project 
+
+## Virtual environment setup and run project
+Create venv
+```sh
+python -m venv venv
+```
+Active venv for window
+```sh
+python -m venv venv
+```
+Active for Linux/MacOS
+```sh
+source venv/bin/activate
+```
+Install dependencies
+```sh
+pip install -r requirements.txt
+```
+Run project 
 ```sh
 python main.py
 ```
 
-## Virtual environment setup
-### Create venv
-```sh
-python -m venv venv
-```
-### Active for window
-```sh
-python -m venv venv
-```
-### Active for Linux/MacOS
-```sh
-source venv/bin/activate
-```
-### Install dependencies
-```sh
-pip install -r requirements.txt
-```
 
 ## Project structure
 
