@@ -2,7 +2,7 @@ import os
 import aiohttp
 import asyncio 
 from auth import login, register
-
+from add_delete_ls import add
 
 def text_color(command, color): 
     match color: 
@@ -39,11 +39,12 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def process_command(command):
+async def process_command(command):
+    arg = command.split()
     """Process the command entered by the user"""
-    match command:
-        case "start":
-            print("Starting torrent download...")
+    match arg[0]:
+        case "add":
+            await add(arg[1])
         case "stop":
             print("Stopping torrent download...")
         case "help":
@@ -62,14 +63,14 @@ async def main():
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
                 if command == 'exit': break
-                if command: process_command(command)
+                if command: await process_command(command)
     elif choice == '2':
         if await login():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
                 if command == 'exit': break
-                if command: process_command(command)
+                if command: await process_command(command)
     elif choice.lower() == 'exit':
         print("Exiting the program.")
     else:
