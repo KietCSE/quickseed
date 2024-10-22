@@ -1,4 +1,7 @@
 import os
+import aiohttp
+import asyncio 
+from auth import login, register
 
 
 def text_color(command, color): 
@@ -35,25 +38,6 @@ def clear_screen():
     """Clear the terminal screen based on the operating system"""
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def login():
-    print("Login successful!")
-    return True
-    """Function to handle user login"""
-    username = input("Username: ")
-    password = getpass.getpass("Password: ")  # Sử dụng getpass để nhập mật khẩu mà không hiển thị
-    # Kiểm tra tên người dùng và mật khẩu (giả định có tên và mật khẩu hợp lệ)
-    if username == "admin" and password == "password123":
-        print("Login successful!")
-        return True
-    else:
-        print("Invalid username or password.")
-        return False
-
-
-def register():
-    print("Register successfully")
-    return True
-
 
 def process_command(command):
     """Process the command entered by the user"""
@@ -70,41 +54,33 @@ def process_command(command):
             print(f"Unrecognized command: {command}. Type 'help' for available commands.")
 
 
-def main():
-    try:
-        choice = input("Do you want to [1] Register or [2] Login? (exit to quit): ").strip()
-        if choice == '1':
-            if register():
-                try:
-                    while True:
-                        prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
-                        command = input(prompt).strip() 
-                        if command == 'exit': break
-                        if command: process_command(command)
-                except KeyboardInterrupt:
-                    print("\nStop program")    
-        
-        elif choice == '2':
-            if login():  # Kiểm tra xem đăng nhập có thành công hay không
-                try:
-                    while True:
-                        prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
-                        command = input(prompt).strip() 
-                        if command == 'exit': break
-                        if command: process_command(command)      
-                except KeyboardInterrupt:
-                    print("\nStop program")
-
-        
-        elif choice.lower() == 'exit':
-            print("Exiting the program.")
-        else:
-            print(text_color("Invalid choice. Please choose 1 or 2.", "red"))
+async def main():
+    choice = input("Do you want to [1] Register or [2] Login? (exit to quit): ").strip()
+    if choice == '1':
+        if await register():
+            while True:
+                prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
+                command = input(prompt).strip() 
+                if command == 'exit': break
+                if command: process_command(command)
+    elif choice == '2':
+        if await login():
+            while True:
+                prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
+                command = input(prompt).strip() 
+                if command == 'exit': break
+                if command: process_command(command)
+    elif choice.lower() == 'exit':
+        print("Exiting the program.")
+    else:
+        print(text_color("Invalid choice. Please choose 1 or 2.", "red"))
     
-    except KeyboardInterrupt:
-        print("\nStop program")
 
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nExiting program...")
+

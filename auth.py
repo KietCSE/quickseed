@@ -1,23 +1,56 @@
-import fetch_api as api
+from fetch_api import *
 from config import HOST
 import getpass
 
-def login():
-    print("Login successful!")
-    print(HOST)
-    return True
-    """Function to handle user login"""
-    username = input("Username: ")
-    password = getpass.getpass("Password: ")  # Sử dụng getpass để nhập mật khẩu mà không hiển thị
-    # Kiểm tra tên người dùng và mật khẩu (giả định có tên và mật khẩu hợp lệ)
+async def login():
+    while True: 
+        username = input("Username: ")
+        password = getpass.getpass("Password: ")  # Sử dụng getpass để nhập mật khẩu mà không hiển thị
+        
+        data = {
+            "account": username, 
+            "password": password
+        }
+
+        response = await postAPI(f'{HOST}/login', data)
+        if (response.get("status")): 
+            print("Login successfully!")
+            return True
+        else: 
+            print(f"\033[1;31m{response.get('message')}\033[0m")
+
+
+async def register(): 
+    while True: 
+        username = input("Username: ")
+        password = getpass.getpass("Password: ")  # Sử dụng getpass để nhập mật khẩu mà không hiển thị
+        confirm = getpass.getpass("Confirm password: ")  # Sử dụng getpass để nhập mật khẩu mà không hiển thị
+        
+        if password != confirm: 
+            print(f"\033[1;31mIncorrect confirmed password\033[0m")
+            continue
+
+        data = {
+            "account" : username, 
+            "password": password
+        }
+
+        response = await postAPI(f'{HOST}/register', data)
+        if (response.get("status")): 
+            print("Register successfully!")
+            return True
+        else: 
+            print(f"\033[1;31m{response.get('message')}\033[0m")
+
+
+
+async def main():
+    await register()
     
 
-    if username == "admin" and password == "password123":
-        print("Login successful!")
-        return True
-    else:
-        print("Invalid username or password.")
-        return False
+if __name__ == "__main__":
+    asyncio.run(main())
 
 
-login()
+
+    
