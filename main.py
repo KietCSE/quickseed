@@ -1,8 +1,11 @@
 import os
 import aiohttp
 import asyncio 
+import signal
+import threading
 from auth import login, register
 from add_delete_ls import add, delete, ls
+from get_seed_peers import get
 
 def text_color(command, color): 
     match color: 
@@ -40,15 +43,17 @@ def clear_screen():
 
 
 async def process_command(command):
-    arg = command.split()
+    args = command.split()
     """Process the command entered by the user"""
-    match arg[0]:
+    match args[0]:
         case "add":
-            await add(arg[1])
+            await add(args[1])
         case "delete":
-            await delete(arg[1])
+            await delete(args[1])
         case "ls": 
             await ls("123")
+        case "get": 
+            await get(args[1])
         case "help":
             show_help()
         case "clear":
@@ -71,14 +76,18 @@ async def main():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
-                if command == 'exit': break
+
+                # stop current process
+                if command == 'exit': self_kill()    
                 if command: await process_command(command)
     elif choice.lower() == 'exit':
         print("Exiting the program.")
     else:
         print(text_color("Invalid choice. Please choose 1 or 2.", "red"))
-    
 
+
+def self_kill():
+    os.kill(os.getpid(), signal.SIGKILL)
 
 
 if __name__ == "__main__":
@@ -86,4 +95,5 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\nExiting program...")
+        pass
 

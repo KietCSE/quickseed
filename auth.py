@@ -1,8 +1,7 @@
 from fetch_api import *
 from config import HOST
 import getpass
-
-PEER_ID=''
+import state as var
 
 async def login():
     while True: 
@@ -17,7 +16,7 @@ async def login():
         response = await postAPI(f'{HOST}/login', data)
         if (response.get("status")): 
             print("Login successfully!")
-            PEER_ID = response.get("peerId")
+            var.PEER_ID = response.get("peerId")
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")
