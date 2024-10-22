@@ -1,6 +1,23 @@
 # Torrent-app
 
-Build a simple CLI torrent-app for P2P file sharing 
+Build a simple CLI torrent-app for P2P file sharing
+
+## Available Commands:
+    -------------------------
+    - `add`                 : Publish your documents into the network
+    - `delete   <code>`     : Delete your published documents
+    - `ls`                  : List all your published documents 
+    - `seed     <code>`     : Start sharing your documents 
+    - `get      <code>`     : Start downloading documents
+    - `stop     <code>`     : Stop downloading/sharing documents 
+    - `show`                : Show download progress
+    - `peers    <code>`     : List all peers you're connected to 
+    - `scrape   <code>`     : Check the current info of the torrent network
+    - `help`                : Display available commands
+    - `clear`               : Clear the screen
+    - `logout`              : Log out of your account
+    - `exit`                : Exit the program
+
 
 
 ## Virtual environment setup and run project
