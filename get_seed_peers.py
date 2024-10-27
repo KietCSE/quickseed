@@ -7,7 +7,6 @@ import state as var
 from fetch_api import * 
 from config import HOST
 
-
 # list peers to connect 
 PeersList = []
 
@@ -42,6 +41,8 @@ def subscribe_worker(code):
 
     except requests.exceptions.RequestException as e:
         print(f"Error with server connection: {e}")
+        print(f"Detailed error info: {e.__class__.__name__}: {e}")
+
 
 
 # create a threat to listen to notification from tracker when a new peer join network 
