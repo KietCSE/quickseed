@@ -14,6 +14,9 @@ PeersList = []
 # list metainfo file for multiple download 
 Metainfo = []  
 
+
+ListHashPeer = []
+
 stop_event = threading.Event()
 
 def getLocalIP():
@@ -93,7 +96,10 @@ async def get(code):
         PeersList = response.get('peers')
         Metainfo = response.get('metainfo')
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
-        print(Metainfo)
+        # print(Metainfo)
+        hashpieces = Metainfo["info"]["pieces"]
+        ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
+        print(ListHashPeer)
         print("You join successfully!")
 
         # create a thread to listen to notification from tracker 

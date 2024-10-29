@@ -70,10 +70,6 @@ def get_file_info(path):
     
     
     pieces += hashSHA1(leftover_data)
-    # print(pieces)
-
-    result = [pieces[i:i + 40] for i in range(0, len(pieces), 40)]
-    # print(result)
 
     return file_info, pieces
 
