@@ -3,16 +3,19 @@ import json
 import requests
 import sseclient
 import threading
+import bencodepy
 import state as var
 from fetch_api import * 
-from config import HOST
-
+from config import HOST, BENCODE
 
 # list peers to connect 
 PeersList = []
 
 # list metainfo file for multiple download 
 Metainfo = []  
+
+
+ListHashPeer = []
 
 stop_event = threading.Event()
 
@@ -22,6 +25,28 @@ def getLocalIP():
     # Lấy địa chỉ IP cục bộ
     local_ip = socket.gethostbyname(hostname)
     return local_ip
+
+
+def decode_bencoded(data):
+    # Giải mã dữ liệu bencoded
+    decoded_data = bencodepy.decode(data)
+
+    # Chuyển đổi kiểu dữ liệu từ bytes sang str
+    return convert_bytes_to_str(decoded_data)
+
+
+def convert_bytes_to_str(data):
+    # Nếu là từ điển, duyệt qua từng phần tử
+    if isinstance(data, dict):
+        return {key.decode('utf-8'): convert_bytes_to_str(value) for key, value in data.items()}
+    # Nếu là danh sách, duyệt qua từng phần tử
+    elif isinstance(data, list):
+        return [convert_bytes_to_str(item) for item in data]
+    # Nếu là kiểu dữ liệu khác (chẳng hạn int), trả về trực tiếp
+    elif isinstance(data, bytes):
+        return data.decode('utf-8')  # Chuyển đổi bytes sang str
+    else:
+        return data
 
 
 # create long-live http connection for server sent event (SSE) to tracker 
@@ -42,6 +67,8 @@ def subscribe_worker(code):
 
     except requests.exceptions.RequestException as e:
         print(f"Error with server connection: {e}")
+        print(f"Detailed error info: {e.__class__.__name__}: {e}")
+
 
 
 # create a threat to listen to notification from tracker when a new peer join network 
@@ -68,6 +95,11 @@ async def get(code):
     if (response.get("status")): 
         PeersList = response.get('peers')
         Metainfo = response.get('metainfo')
+        # if BENCODE: Metainfo = decode_bencoded(Metainfo)
+        # print(Metainfo)
+        hashpieces = Metainfo["info"]["pieces"]
+        ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
+        print(ListHashPeer)
         print("You join successfully!")
 
         # create a thread to listen to notification from tracker 
