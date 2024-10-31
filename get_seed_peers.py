@@ -19,6 +19,7 @@ ListHashPeer = []
 
 stop_event = threading.Event()
 
+
 def getLocalIP():
     # Lấy tên host của máy
     hostname = socket.gethostname()
@@ -99,7 +100,7 @@ async def get(code):
         # print(Metainfo)
         hashpieces = Metainfo["info"]["pieces"]
         ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
-        print(ListHashPeer)
+        # print(ListHashPeer)
         print("You join successfully!")
 
         # create a thread to listen to notification from tracker 

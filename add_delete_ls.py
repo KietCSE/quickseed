@@ -39,11 +39,11 @@ def get_file_info(path):
 
         with open(file_path, 'rb') as f:
             while True:
-                chunk = leftover_data + f.read(10 - len(leftover_data))
+                chunk = leftover_data + f.read(64*1024 - len(leftover_data))
                 # print(chunk)
                 if not chunk: break
 
-                if len(chunk) == 10:
+                if len(chunk) == 64*1024:
                     piece_hash = hashSHA1(chunk)
                     pieces += piece_hash
                     leftover_data = b''  # Reset leftover data as it's fully used
@@ -152,12 +152,9 @@ async def ls(peerId):
 
 async def main():
     # path = input(">> ")
-    result = create_metainfo('test')
-    bencoded_data = bencodepy.encode(result)
-    print(type(bencoded_data))
-    decoded_data = decode_bencoded(bencoded_data)
-    print(type(decoded_data))
-    # print(file_info)
+    result, _ = create_metainfo('/home/tuankiet/Documents/HK241/COMPUTER NETWORK/LAB')
+    print(result)
+
 
 if __name__ == '__main__': 
     asyncio.run(main())
