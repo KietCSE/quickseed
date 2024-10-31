@@ -111,7 +111,7 @@ async def add(path):
     response = await postAPI(f'{HOST}/metainfo', metainfo)
     print(response)
     if (response.get("status")): 
-        print(f"Added  {metainfo.get("hashCode")}  {filename}")
+        print(f"Added  {metainfo.get('hashcode')}  {filename}")
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
