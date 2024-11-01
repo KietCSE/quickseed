@@ -6,13 +6,16 @@ import threading
 import state as var
 from fetch_api import * 
 from config import HOST
-
+from add_delete_ls import create_metainfo
 
 # list peers to connect 
 PeersList = []
 
 # list metainfo file for multiple download 
 Metainfo = []  
+
+# using only one for testing
+metainfo = {}
 
 stop_event = threading.Event()
 
