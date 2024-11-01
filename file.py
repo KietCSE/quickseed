@@ -41,7 +41,7 @@ class File:
 
     def write_piece_to_file(self, piece: Piece):
         """Ghi dữ liệu vào file đúng vị trí trong cấu trúc thư mục."""
-        offset = piece.index * self.piece_size
+        offset = piece.index * self.piece_size 
         remaining_data = piece.data
         
         for file_info in self.files:
