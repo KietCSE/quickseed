@@ -5,6 +5,7 @@ import hashlib
 from fetch_api import *
 from config import HOST, BENCODE
 import bencodepy
+import split as spt
 # import bencodepy
 
 def hashSHA1(data):
@@ -77,10 +78,10 @@ def get_file_info(path):
 
 def create_metainfo(path, announce_url='tracker', author = '123', comment = 'test-torrent'):
     """Tạo file metainfo cho torrent."""
-    files, pieces = get_file_info(path)
+    files, creationDate, pieces = spt.get_file_info(path)
     
     # Tính toán các thông số cần thiết
-    piece_length = 524288  # 512 KB
+    piece_length = spt.PIECE_SIZE  # 512 KB
     filename = os.path.basename(path)
     info_data = {
             "name": filename,
@@ -96,7 +97,7 @@ def create_metainfo(path, announce_url='tracker', author = '123', comment = 'tes
         "hashCode": code,
         "announce": announce_url,
         "info": info_data,
-        "creationDate": int(time.time()),  # Thời gian hiện tại
+        "creationDate": creationDate,  # Thời gian hiện tại
         "comment": comment,
     }
     # print (metainfo)
@@ -153,7 +154,7 @@ async def ls(peerId):
 
 async def main():
     # path = input(">> ")
-    result, _ = create_metainfo('/home/tuankiet/Documents/HK241/COMPUTER NETWORK/LAB')
+    result, _ = create_metainfo('/home/tuankiet/Documents/CODE/sample-cli')
     print(result)
 
 
