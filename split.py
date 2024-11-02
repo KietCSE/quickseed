@@ -4,7 +4,7 @@ import math
 from bitarray import bitarray
 import hashlib
 
-PIECE_SIZE = 1024*128
+PIECE_SIZE = 1024
 
 SPLIT_CHAR = '---'
 
@@ -198,10 +198,10 @@ def get_file_info(path):
 
 
 
-def save_piece(data, index, creationDate):
-    from get_seed_peers import Metainfo
+def save_piece(data, index, creationDate, metainfo):
+    # from get_seed_peers import Metainfo
 
-    files =  Metainfo["info"]["files"]
+    files =  metainfo["info"]["files"]
     count_piece = -1
     is_save = False
 
@@ -212,7 +212,7 @@ def save_piece(data, index, creationDate):
         try: 
             if (index <= count_piece): 
                 relative_path = SPLIT_CHAR.join(piece["path"])
-                path_file = f'dict/{creationDate}/{Metainfo["info"]["name"]}{SPLIT_CHAR}{relative_path}'
+                path_file = f'dict/{creationDate}/{metainfo["info"]["name"]}{SPLIT_CHAR}{relative_path}'
 
                 os.makedirs(path_file, exist_ok=True)
 
@@ -235,21 +235,23 @@ def save_piece(data, index, creationDate):
 
 
 
-def get_piece(index, creationDate):
-    from get_seed_peers import Metainfo
-
-    files =  Metainfo["info"]["files"]
+def get_piece(index, creationDate, metainfo):
+    
+    print("get peer")
+    print(metainfo)
+    files =  metainfo["info"]["files"]
     count_piece = -1
+    print(files)
 
     for piece in files:
         max_piece = math.ceil(piece["length"] / PIECE_SIZE)
         count_piece += max_piece
-        # print("xet trong ", count_piece)
-
+        print("xet trong ", count_piece)
+        # print()
         if (index <= count_piece): 
             relative_path = SPLIT_CHAR.join(piece["path"])
-            path_file = f'dict/{creationDate}/{Metainfo["info"]["name"]}{SPLIT_CHAR}{relative_path}/piece_{index}.bin'
-        
+            path_file = f'dict/{creationDate}/{metainfo["info"]["name"]}{SPLIT_CHAR}{relative_path}/piece_{index}.bin'
+            print(path_file)
         # Open the file and read the data inside
             try:
                 with open(path_file, 'rb') as file:

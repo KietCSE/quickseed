@@ -4,10 +4,26 @@ import socket
 from split import get_piece
 import json
 
+
 MAX_REGULAR_UNCHOKE = 4
 REGULAR_UNCHOKE = 10
 OPTIMISTICALLY_UNCHOKE = 30
 MAX_CONNECTION = 15
+
+
+from datetime import datetime
+
+def time_transfer(time): 
+    # Chuỗi thời gian ISO 8601
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    dt = datetime.fromisoformat(time.replace("Z", "+00:00"))
+
+    # Chuyển đổi đối tượng datetime thành timestamp (giây)
+    creationDate = int(dt.timestamp() * 1000)  # Nhân với 1000 để có mili giây
+    return creationDate
+
+
 
 def mappingFromListToDict(interested: list) -> dict:
     result: dict = {}
@@ -19,7 +35,7 @@ def mappingFromListToDict(interested: list) -> dict:
         print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
         return {}
 class P2PUploader:
-    def __init__(self, metainfo, host: str, port: int, pieces: list = [], interested: list = []):
+    def __init__(self,metainfo, host: str, port: int, pieces: list = [], interested: list = []):
         self.host = host
         self.port = port
         self.pieces = pieces
@@ -30,7 +46,9 @@ class P2PUploader:
         
         self.running = True
         self.status_file = "status.txt"
-        self.creationDate = metainfo["creationDate"]
+
+        self.creationDate = time_transfer(metainfo["creationDate"])
+        self.metainfo = metainfo
 
     def start(self):
         try:
@@ -68,18 +86,23 @@ class P2PUploader:
                 print(f"Peer server {self.port}: Sending piece {piece_index}")
                 # client_socket.send(get_piece(index=piece_index))
                 # piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
-                piece_data = get_piece(index=piece_index, creationDate=self.creationDate)
-                if piece_data:
-                    try:
-                        client_socket.send(piece_data)
-                    except Exception as e:
-                        print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
-                    # print('test', piece_data)``
-                else:
-                    try:
-                        client_socket.send(b"")  # Send an empty response if the piece isn't found
-                    except Exception as e:
-                        print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
+                try: 
+                    print(type(piece_index), piece_index, self.creationDate)
+                    piece_data = get_piece(index=piece_index, creationDate=self.creationDate, metainfo=self.metainfo)
+               
+                    print(len(piece_data))
+                    if piece_data:
+                        try:
+                            client_socket.send(piece_data)
+                        except Exception as e:
+                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
+                        # print('test', piece_data)``
+                    else:
+                        try:
+                            client_socket.send(b"")  # Send an empty response if the piece isn't found
+                        except Exception as e:
+                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
+                except Exception as e: print("here ", e)
                 # elif ("REQUEST_PIECES" in request):
                 #     pass
             elif "REQUEST_PIECES" in request:
