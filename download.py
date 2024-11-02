@@ -20,6 +20,9 @@ class P2PDownloader:
         self.piece_queue = PieceQueue()
         self.num_threads = 5  # Số luồng đồng thời tối đa
 
+        # Nạp trạng thái các piece đã tải từ file trạng thái
+        self.file.load_downloaded_status()
+
     def print_f(self):
         print(self.downloaded_data)
 
@@ -97,6 +100,7 @@ class P2PDownloader:
                         self.downloaded_data += len(piece_data)
                         piece_verified = True
 
+                        self.file.save_downloaded_status()
                         sock.close()
             except Exception as e:
                 print(f"Error downloading piece {piece_index} from {peer}: {e}")
@@ -112,8 +116,13 @@ class P2PDownloader:
         # Thu thập thông tin mảnh và peer
         self.collect_piece_availability()
 
+        # Tính tổng kích thước của các mảnh đã tải
+        downloaded_size = sum(self.file.piece_size for _ in self.file.piece_idx_downloaded)
+        self.downloaded_data = downloaded_size  # Cập nhật lại tổng dữ liệu đã tải
+
         # Tạo thanh tiến trình tổng thể
         with tqdm(total=self.file.total_size, unit="B", unit_scale=True, desc="Downloading") as progress_bar:
+            progress_bar.update(downloaded_size)
             # Tạo các luồng để tải xuống các mảnh song song
             threads = []
             for _ in range(self.num_threads):
@@ -134,7 +143,7 @@ class P2PDownloader:
                 print("Client: Download incomplete. Missing pieces:", missing_pieces)
 
 # Cấu hình kích thước và dữ liệu cho từng mảnh của nhiều peer
-piece_size = 1024*1024*10
+piece_size = 1024
 pieces_peer1 = [Piece(b"A" * piece_size, 0), Piece(b"B" * piece_size, 1), Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3)]
 pieces_peer2 = [Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3), Piece(b"E" * piece_size, 4), Piece(b"F" * piece_size, 5)]
 pieces_peer3 = [Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3), Piece(b"E" * piece_size, 4), Piece(b"F" * piece_size, 5)]
@@ -181,14 +190,20 @@ metainfo = {
         "pieces": piece_hashes
     },
     "files": [
-        {"length": int(1024*1024*10*3.5), "path": ["folder", "file1.txt"]},
-        {"length": int(1024*1024*10*2.5), "path": ["folder", "file2.txt"]}
+        {"length": int(1024*3.5), "path": ["folder", "file1.txt"]},
+        {"length": int(1024*2.5), "path": ["folder", "file2.txt"]}
     ]
 }
 
+peersList = [
+    {"ip": "127.0.0.1", "port": 5000,},
+    {"ip": "127.0.0.1", "port": 5001},
+    {"ip": "127.0.0.1", "port": 5002}
+]
+
 # Khởi tạo đối tượng File và P2PDownloader và bắt đầu tải xuống
 file = File(metainfo)
-downloader = P2PDownloader(file, list_peers)
+downloader = P2PDownloader(file, peersList)
 downloader.download_muti_directory()
 
 # Đóng các server sau khi hoàn tất tải xuống

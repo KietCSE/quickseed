@@ -20,16 +20,63 @@ class File:
         self.piece_idx_downloaded = []
         self.piece_idx_not_downloaded = list(range(self.num_pieces))
 
+        # Đường dẫn tới file lưu trạng thái tải xuống
+        self.status_file = "status.txt"
+
         # Tạo thư mục gốc và các file trống trong cấu trúc thư mục
         self._initialize_empty_files()
 
     def _initialize_empty_files(self):
-        """Tạo cấu trúc thư mục và file trống với kích thước cố định."""
+        """Tạo cấu trúc thư mục và các file chỉ cho các mảnh chưa tải."""
         for file_info in self.files:
             file_path = os.path.join(self.path, *file_info['path'])
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            with open(file_path, "wb") as f:
-                f.truncate(file_info['length'])
+
+            # Kiểm tra và mở file ở chế độ "a+b" (ghi bổ sung) nếu nó đã tồn tại
+            if os.path.exists(file_path):
+                with open(file_path, "a+b") as f:
+                    existing_size = os.path.getsize(file_path)
+                    
+                    # Nếu kích thước của file nhỏ hơn kích thước yêu cầu, mở rộng đến kích thước cần thiết
+                    if existing_size < file_info['length']:
+                        f.seek(file_info['length'] - 1)
+                        f.write(b'\0')  # Mở rộng file đến kích thước yêu cầu
+
+                    # Đánh dấu các mảnh đã tải dựa vào kích thước hiện tại
+                    piece_start = 0
+                    while piece_start < existing_size:
+                        piece_index = piece_start // self.piece_size
+                        self.piece_idx_downloaded.append(piece_index)
+                        piece_start += self.piece_size
+
+            # Nếu file chưa tồn tại, tạo mới với kích thước cố định
+            else:
+                with open(file_path, "wb") as f:
+                    f.truncate(file_info['length'])
+
+
+    def load_downloaded_status(self):
+        """Đọc danh sách các piece đã tải từ file trạng thái."""
+        if os.path.exists(self.status_file):
+            with open(self.status_file, "r") as f:
+                line = f.readline().strip()
+                if line.startswith("downloaded_pieces = "):
+                    pieces_str = line.split(" = ")[1].strip()
+                    
+                    # Kiểm tra nếu pieces_str rỗng hoặc chỉ chứa "[]"
+                    if pieces_str == "[]":
+                        self.piece_idx_downloaded = []
+                    else:
+                        self.piece_idx_downloaded = list(map(int, pieces_str.strip("[]").split(", ")))
+
+                    # Xác định các piece chưa được tải
+                    self.piece_idx_not_downloaded = [i for i in range(self.num_pieces) if i not in self.piece_idx_downloaded]
+
+
+    def save_downloaded_status(self):
+        """Ghi danh sách các piece đã tải xuống vào file trạng thái."""
+        with open(self.status_file, "w") as f:
+            f.write(f"downloaded_pieces = {sorted(self.piece_idx_downloaded)}\n")
 
     def add_piece(self, piece: Piece):
         """Thêm mảnh dữ liệu vào file tương ứng trong thư mục."""
