@@ -73,6 +73,7 @@ def subscribe_worker(code):
         # Lắng nghe sự kiện và xử lý
         for event in client.events():
             PeersList = event.data
+            PeersList = filter(lambda x: x["peerId"] != var.PEER_ID, PeersList)
             print(PeersList)
 
     except requests.exceptions.RequestException as e:
@@ -137,6 +138,7 @@ async def seed(code):
     response = await postAPI(f'{HOST}/join', data)
     if (response.get("status")): 
         PeersList = response.get('peers')
+        PeersList = filter(lambda x: x["peerId"] != var.PEER_ID, PeersList)
         Metainfo = response.get('metainfo')
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
