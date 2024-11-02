@@ -39,7 +39,7 @@ class P2PDownloader:
         pieces_info = list(map(int, data.decode("utf-8").split(",")))
         # print(pieces_info)
         return pieces_info
-
+    
     def collect_piece_availability(self):
         """Thu thập tần suất của các mảnh từ tất cả các peer và xây dựng hàng đợi 'rarest first'."""
         for peer in self.list_peer:
@@ -93,7 +93,6 @@ class P2PDownloader:
                 piece_data = self.download_piece(sock, piece_index)
 
                 if self.verify_piece(piece_data, piece_index):
-                    print('Here')
                     with self.lock:
                         progress_bar.update(len(piece_data))
                         progress_bar.refresh()
@@ -164,7 +163,8 @@ class P2PDownloader:
 # server_threads = []
 
 # for info in list_peers:
-#     peer_server = P2PUploader(info["ip"], info["port"], info["pieces"])
+#     peer_server = P2PUploader(host=info["ip"], port=info["port"], pieces=info["pieces"])
+#     # peer_server = P2PUploader()
 #     peer_servers.append(peer_server)
     
 #     server_thread = threading.Thread(target=peer_server.start)

@@ -2,6 +2,7 @@ import threading
 import random
 import socket
 from split import get_piece
+import json
 
 MAX_REGULAR_UNCHOKE = 4
 REGULAR_UNCHOKE = 10
@@ -28,6 +29,7 @@ class P2PUploader:
         self.interested = mappingFromListToDict(interested=interested)
         
         self.running = True
+        self.status_file = "status.txt"
 
     def start(self):
         try:
@@ -64,8 +66,8 @@ class P2PUploader:
                 # if piece_index < len(self.pieces):
                 print(f"Peer server {self.port}: Sending piece {piece_index}")
                 # client_socket.send(get_piece(index=piece_index))
-                # piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
-                piece_data = get_piece(index=piece_index)
+                piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
+                # piece_data = get_piece(index=piece_index)
                 if piece_data:
                     try:
                         client_socket.send(piece_data)
@@ -81,8 +83,14 @@ class P2PUploader:
                 #     pass
             elif "REQUEST_PIECES" in request:
                 # Trả về danh sách các chỉ số mảnh mà server sở hữu
-                piece_indices = [piece.index for piece in self.pieces]
-                client_socket.send(",".join(map(str, piece_indices)).encode("utf-8"))
+                try:
+                    with open("status.txt", "r") as f:
+                        downloaded = json.loads(f.read())
+                    # piece_indices = [piece.index for piece in self.pieces]
+                    # client_socket.send(",".join(map(str, piece_indices)).encode("utf-8"))
+                    client_socket.send(",".join(map(str, downloaded)).encode("utf-8"))
+                except Exception as e:
+                    print(f"\033[1;31m{f"ERROR IN READ STATUS (UPLOAD): {e}"}\033[0m")        
             # client_socket.close()
             # self.connected.pop(addr)
         except Exception as e:

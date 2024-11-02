@@ -1,6 +1,7 @@
 import os
 import math
 from split import save_piece
+import json
 
 class Piece:
     def __init__(self, data: bytes, index: int):
@@ -60,15 +61,16 @@ class File:
         """Đọc danh sách các piece đã tải từ file trạng thái."""
         if os.path.exists(self.status_file):
             with open(self.status_file, "r") as f:
-                line = f.readline().strip()
-                if line.startswith("downloaded_pieces = "):
-                    pieces_str = line.split(" = ")[1].strip()
+                # line = f.readline().strip()
+                    line = json.loads(f.read())
+                # if line.startswith("downloaded_pieces = "):
+                    # pieces_str = line.split(" = ")[1].strip()
                     
                     # Kiểm tra nếu pieces_str rỗng hoặc chỉ chứa "[]"
-                    if pieces_str == "[]":
+                    if len(line) == 0:
                         self.piece_idx_downloaded = []
                     else:
-                        self.piece_idx_downloaded = list(map(int, pieces_str.strip("[]").split(", ")))
+                        self.piece_idx_downloaded = line
 
                     # Xác định các piece chưa được tải
                     self.piece_idx_not_downloaded = [i for i in range(self.num_pieces) if i not in self.piece_idx_downloaded]
@@ -77,7 +79,8 @@ class File:
     def save_downloaded_status(self):
         """Ghi danh sách các piece đã tải xuống vào file trạng thái."""
         with open(self.status_file, "w") as f:
-            f.write(f"downloaded_pieces = {sorted(self.piece_idx_downloaded)}\n")
+            downloaded = sorted(self.piece_idx_downloaded)
+            json.dump(downloaded, f)
 
     def add_piece(self, piece: Piece):
         """Thêm mảnh dữ liệu vào file tương ứng trong thư mục."""
