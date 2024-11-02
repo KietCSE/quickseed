@@ -17,6 +17,7 @@ async def login():
         if (response.get("status")): 
             print("Login successfully!")
             var.PEER_ID = response.get("peerId")
+            print(var.PEER_ID)
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")
@@ -41,6 +42,7 @@ async def register():
         if (response.get("status")): 
             print("Register successfully!")
             var.PEER_ID = response.get("peerId")
+            print(var.PEER_ID)
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")
