@@ -25,55 +25,55 @@ def hashSHA1(data):
     return sha1_hash
 
 
-def get_file_info(path):
-    file_info = []
-    pieces=''
-    leftover_data = b''
+# def get_file_info(path):
+#     file_info = []
+#     pieces=''
+#     leftover_data = b''
 
-    def process_file(file_path):
-        nonlocal leftover_data
-        nonlocal pieces
-        # pieces = []
+#     def process_file(file_path):
+#         nonlocal leftover_data
+#         nonlocal pieces
+#         # pieces = []
         
-        file_length = os.path.getsize(file_path)
-        relative_path = os.path.relpath(file_path, path).split(os.sep)
+#         file_length = os.path.getsize(file_path)
+#         relative_path = os.path.relpath(file_path, path).split(os.sep)
 
-        with open(file_path, 'rb') as f:
-            while True:
-                chunk = leftover_data + f.read(64*1024 - len(leftover_data))
-                # print(chunk)
-                if not chunk: break
+#         with open(file_path, 'rb') as f:
+#             while True:
+#                 chunk = leftover_data + f.read(64*1024 - len(leftover_data))
+#                 # print(chunk)
+#                 if not chunk: break
 
-                if len(chunk) == 64*1024:
-                    piece_hash = hashSHA1(chunk)
-                    pieces += piece_hash
-                    leftover_data = b''  # Reset leftover data as it's fully used
-                else:
-                    # If it's less than 512 KB, keep it in leftover_data for the next file
-                    leftover_data = chunk
-                    break  # Stop reading and move to the next file to complete this leftover
+#                 if len(chunk) == 64*1024:
+#                     piece_hash = hashSHA1(chunk)
+#                     pieces += piece_hash
+#                     leftover_data = b''  # Reset leftover data as it's fully used
+#                 else:
+#                     # If it's less than 512 KB, keep it in leftover_data for the next file
+#                     leftover_data = chunk
+#                     break  # Stop reading and move to the next file to complete this leftover
 
-        file_info.append({
-            'length': file_length,
-            'path': relative_path,
-        })
+#         file_info.append({
+#             'length': file_length,
+#             'path': relative_path,
+#         })
 
 
-    if os.path.isdir(path):
-        # Nếu là thư mục, duyệt qua tất cả tệp tin trong thư mục
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                process_file(file_path)
-    else:
-        # file_path = os.path.join(root, file)
-        # Nếu là tệp tin, chỉ cần thêm thông tin của nó
-        process_file(path)
+#     if os.path.isdir(path):
+#         # Nếu là thư mục, duyệt qua tất cả tệp tin trong thư mục
+#         for root, dirs, files in os.walk(path):
+#             for file in files:
+#                 file_path = os.path.join(root, file)
+#                 process_file(file_path)
+#     else:
+#         # file_path = os.path.join(root, file)
+#         # Nếu là tệp tin, chỉ cần thêm thông tin của nó
+#         process_file(path)
     
     
-    pieces += hashSHA1(leftover_data)
+#     pieces += hashSHA1(leftover_data)
 
-    return file_info, pieces
+#     return file_info, pieces
 
 
 def create_metainfo(path, announce_url='tracker', author = '123', comment = 'test-torrent'):
