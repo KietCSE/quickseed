@@ -41,6 +41,7 @@ class P2PUploader:
             while self.running:
                 client_socket, addr = server.accept()
                 if self.running:
+                    print(f"\033[1;32m{addr}\033[0m")
                     self.connected[addr[0]] = 0 # add connected peer to dict (key = (ip, port), value = downloadRate)
                     if (len(self.unchoke) < MAX_REGULAR_UNCHOKE) and (addr[0] not in self.unchoke):
                         self.unchoke.append(addr[0])
@@ -63,8 +64,8 @@ class P2PUploader:
                 # if piece_index < len(self.pieces):
                 print(f"Peer server {self.port}: Sending piece {piece_index}")
                 # client_socket.send(get_piece(index=piece_index))
-                piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
-            
+                # piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
+                piece_data = get_piece(index=piece_index)
                 if piece_data:
                     try:
                         client_socket.send(piece_data)

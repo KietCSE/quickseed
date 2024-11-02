@@ -85,8 +85,8 @@ class File:
             self.pieces.append(piece)
             self.piece_idx_downloaded.append(piece.index)
             self.piece_idx_not_downloaded.remove(piece.index)
-            self.write_piece_to_file(piece)
-            # save_piece(creationDate=self.creationDate, data=piece.data, index=piece.index)
+            # self.write_piece_to_file(piece)
+            save_piece(creationDate=self.creationDate, data=piece.data, index=piece.index)
 
     def write_piece_to_file(self, piece: Piece):
         """Ghi dữ liệu vào file đúng vị trí trong cấu trúc thư mục."""
