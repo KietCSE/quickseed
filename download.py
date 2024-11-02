@@ -116,7 +116,6 @@ class P2PDownloader:
     def download_muti_directory(self):
         # Thu thập thông tin mảnh và peer
         self.collect_piece_availability()
-
         # Tính tổng kích thước của các mảnh đã tải
         downloaded_size = sum(self.file.piece_size for _ in self.file.piece_idx_downloaded)
         self.downloaded_data = downloaded_size  # Cập nhật lại tổng dữ liệu đã tải
