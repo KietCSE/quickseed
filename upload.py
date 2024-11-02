@@ -19,7 +19,7 @@ def mappingFromListToDict(interested: list) -> dict:
         print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
         return {}
 class P2PUploader:
-    def __init__(self, host: str, port: int, pieces: list = [], interested: list = []):
+    def __init__(self, metainfo, host: str, port: int, pieces: list = [], interested: list = []):
         self.host = host
         self.port = port
         self.pieces = pieces
@@ -30,6 +30,7 @@ class P2PUploader:
         
         self.running = True
         self.status_file = "status.txt"
+        self.creationDate = metainfo["creationDate"]
 
     def start(self):
         try:
@@ -66,8 +67,8 @@ class P2PUploader:
                 # if piece_index < len(self.pieces):
                 print(f"Peer server {self.port}: Sending piece {piece_index}")
                 # client_socket.send(get_piece(index=piece_index))
-                piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
-                # piece_data = get_piece(index=piece_index)
+                # piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
+                piece_data = get_piece(index=piece_index, creationDate=self.creationDate)
                 if piece_data:
                     try:
                         client_socket.send(piece_data)

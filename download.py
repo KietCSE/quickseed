@@ -29,7 +29,7 @@ class P2PDownloader:
 
     def connect_to_peer(self, peer):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((peer['ip'], peer['port']))
+        sock.connect((peer['ip'], int(peer['port'])))
         return sock
     
     def request_pieces_info(self, sock):

@@ -111,7 +111,7 @@ async def get(code):
     if (response.get("status")): 
 
         PeersList = response.get('peers')
-        PeersList = json.loads(PeersList)
+        # PeersList = json.loads(PeersList)
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
         print(PeersList)
@@ -129,7 +129,7 @@ async def get(code):
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
         
-        threading.Thread(target=P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
+        threading.Thread(target=P2PUploader(metainfo=Metainfo,host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
         threading.Thread(target=P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory).start()
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
@@ -167,7 +167,7 @@ async def seed(code):
         subscribe_channel(code)
         
         # P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
-        threading.Thread(target=P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
+        threading.Thread(target=P2PUploader(metainfo=Metainfo,host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
