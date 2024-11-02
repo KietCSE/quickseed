@@ -1,9 +1,0 @@
-package main
-
-import (
-	"sample-cli/cmd"
-)
-
-func main() {
-	cmd.Execute()
-}
