@@ -65,8 +65,9 @@ def get_file_info(path):
                 file_path = os.path.join(root, file)
                 process_file(file_path)
     else:
+        # file_path = os.path.join(root, file)
         # Nếu là tệp tin, chỉ cần thêm thông tin của nó
-        process_file(file_path)
+        process_file(path)
     
     
     pieces += hashSHA1(leftover_data)
