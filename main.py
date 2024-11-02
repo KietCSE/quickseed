@@ -5,6 +5,7 @@ import signal
 import threading
 from auth import login, register
 from add_delete_ls import add, delete, ls
+from get_seed_peers import get, seed
 import state as var
 
 
@@ -56,6 +57,8 @@ async def process_command(command):
         case "get": 
             from get_seed_peers import get
             await get(args[1])
+        case "seed": 
+            await seed(args[1])
         case "help":
             show_help()
         case "clear":
