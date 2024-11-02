@@ -118,7 +118,7 @@ async def add(path):
 
 async def delete(code): 
     data =  {
-        "peerId" : "123", 
+        "peerId" : var.PEER_ID, 
         "hashCode": code
     }
     response = await postAPI(f'{HOST}/delete', data)

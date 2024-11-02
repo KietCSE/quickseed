@@ -9,6 +9,7 @@ from fetch_api import *
 from config import HOST
 from download import *
 from upload import *
+
 # list peers to connect 
 PeersList = []
 
@@ -17,7 +18,7 @@ Metainfo = {}
 
 ListHashPeer = []
 # using only one for testing
-metainfo = {}
+
 
 
 stop_event = threading.Event()

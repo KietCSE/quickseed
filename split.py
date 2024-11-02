@@ -3,15 +3,16 @@ import time
 import math
 from bitarray import bitarray
 import hashlib
-from get_seed_peers import Metainfo
 
-PIECE_SIZE = 1024*128
+PIECE_SIZE = 1024
 
 SPLIT_CHAR = '---'
 
 BIT_ARRAY = None
 
 def create_or_load_bitarray(filename):
+    # from get_seed_peers import Metainfo
+
     directory = 'current_state'
     file_path = os.path.join(directory, filename)
     
@@ -198,6 +199,8 @@ def get_file_info(path):
 
 
 def save_piece(data, index, creationDate):
+    from get_seed_peers import Metainfo
+
     files =  Metainfo["info"]["files"]
     count_piece = -1
     is_save = False
@@ -233,6 +236,8 @@ def save_piece(data, index, creationDate):
 
 
 def get_piece(index, creationDate):
+    from get_seed_peers import Metainfo
+
     files =  Metainfo["info"]["files"]
     count_piece = -1
 
