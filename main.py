@@ -6,6 +6,8 @@ import threading
 from auth import login, register
 from add_delete_ls import add, delete, ls
 from get_seed_peers import get
+import state as var
+
 
 def text_color(command, color): 
     match color: 
@@ -51,7 +53,7 @@ async def process_command(command):
         case "delete":
             await delete(args[1])
         case "ls": 
-            await ls("123")
+            await ls(var.PEER_ID)
         case "get": 
             await get(args[1])
         case "help":
