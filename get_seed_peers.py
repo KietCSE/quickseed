@@ -73,12 +73,9 @@ def subscribe_worker(code):
         # Lắng nghe sự kiện và xử lý
         for event in client.events():
             PeersList = event.data
-<<<<<<< HEAD
-            PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
-=======
+            # PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
             PeersList = json.loads(PeersList)
-            for peer in PeersList: print((peer))
->>>>>>> 2162a183302de83c28207c3e0f443b9826ec3a57
+            # for peer in PeersList: print((peer))
             print(PeersList)
             print(type(PeersList))
 
