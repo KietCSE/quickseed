@@ -116,7 +116,40 @@ async def get(code):
         subscribe_channel(code)
         
         P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
-        P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList)
+        P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start()
+    else: 
+        print(f"\033[1;31m{response.get('message')}\033[0m")
+
+
+async def seed(code): 
+    data = {
+        "hashCode": code,
+        "peerId": var.PEER_ID,
+        "port": var.PORT,
+        "uploaded": var.UPLOADED,
+        "downloaded": var.DOWNLOADED,
+        "left": var.LEFT,
+        "compact": "1",
+        "status": var.STATUS,
+        "numwant": "50",
+        "ip": getLocalIP(),
+    }
+    response = await postAPI(f'{HOST}/join', data)
+    if (response.get("status")): 
+        PeersList = response.get('peers')
+        Metainfo = response.get('metainfo')
+        # if BENCODE: Metainfo = decode_bencoded(Metainfo)
+        # print(Metainfo)
+        hashpieces = Metainfo["info"]["pieces"]
+        ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
+        # print(ListHashPeer)
+        print("You join successfully!")
+
+        # create a thread to listen to notification from tracker 
+        subscribe_channel(code)
+        
+        # P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
+        P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start()
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 

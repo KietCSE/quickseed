@@ -10,8 +10,8 @@ class Piece:
 class File:
     def __init__(self, meta_info):
         self.path = meta_info['info']['name']
-        self.piece_size = meta_info['info']['piece length']
-        self.files = meta_info['files']
+        self.piece_size = meta_info['info']['pieceLength']
+        self.files = meta_info["info"]['files']
         self.total_size = sum(file['length'] for file in self.files)
         self.num_pieces = math.ceil(self.total_size / self.piece_size)
         self.piece_hash = meta_info['info']['pieces']
