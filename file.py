@@ -27,6 +27,7 @@ class File:
 
         # Tạo thư mục gốc và các file trống trong cấu trúc thư mục
         self._initialize_empty_files()
+        self.metainfo = meta_info
 
     def _initialize_empty_files(self):
         """Tạo cấu trúc thư mục và các file chỉ cho các mảnh chưa tải."""
@@ -89,7 +90,7 @@ class File:
             self.piece_idx_downloaded.append(piece.index)
             self.piece_idx_not_downloaded.remove(piece.index)
             # self.write_piece_to_file(piece)
-            save_piece(creationDate=self.creationDate, data=piece.data, index=piece.index)
+            save_piece(data=piece.data, index=piece.index, creationDate=self.creationDate, metainfo=self.metainfo)
 
     def write_piece_to_file(self, piece: Piece):
         """Ghi dữ liệu vào file đúng vị trí trong cấu trúc thư mục."""
