@@ -73,8 +73,16 @@ def subscribe_worker(code):
         # Lắng nghe sự kiện và xử lý
         for event in client.events():
             PeersList = event.data
+<<<<<<< HEAD
             PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
+=======
+            PeersList = json.loads(PeersList)
+            for peer in PeersList: print((peer))
+>>>>>>> 2162a183302de83c28207c3e0f443b9826ec3a57
             print(PeersList)
+            print(type(PeersList))
+
+            # PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
 
     except requests.exceptions.RequestException as e:
         print(f"Error with server connection: {e}")
@@ -104,12 +112,16 @@ async def get(code):
     }
     response = await postAPI(f'{HOST}/join', data)
     if (response.get("status")): 
+
         PeersList = response.get('peers')
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
+
         print(PeersList)
+        print(type(PeersList))
+        
+        PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
-
-        Metainfo = response.get('metainfo')
+        Metainfo = response.get("metainfo")
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
         hashpieces = Metainfo["info"]["pieces"]
@@ -145,6 +157,7 @@ async def seed(code):
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
         print(PeersList)
 
+        print(type(PeersList))
         Metainfo = response.get('metainfo')
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
