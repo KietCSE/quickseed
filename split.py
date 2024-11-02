@@ -8,43 +8,49 @@ PIECE_SIZE = 1024*128
 
 SPLIT_CHAR = '---'
 
-LIST_HASH = ''
+BIT_ARRAY = None
 
-# def create_or_load_bitarray(filename):
-#     directory = 'current_state'
-#     file_path = os.path.join(directory, filename)
+def create_or_load_bitarray(filename):
+    directory = 'current_state'
+    file_path = os.path.join(directory, filename)
     
-#     # Kiểm tra nếu file đã tồn tại
-#     if os.path.exists(file_path):
-#         # Tải bitarray từ file
-#         print("Đang tải bitarray từ tệp hiện có...")
-#         return load_bitarray_from_file(file_path)
-#     else:
-#         # Tạo bitarray mới nếu file chưa tồn tại
-#         print("Tạo mới bitarray và lưu vào tệp...")
-#         num_piece = 0
-#         files = Metainfo["info"]["files"]
+    # Kiểm tra nếu file đã tồn tại
+    if os.path.exists(file_path):
+        # Tải bitarray từ file
+        print("Đang tải bitarray từ tệp hiện có...")
+        with open(file_path, 'r') as f:
+            binary_string = f.read()  # Đọc dữ liệu nhị phân từ tệp
+        # Chuyển đổi chuỗi nhị phân thành bitarray
+        list_downloaded_piece = bitarray(binary_string)
+        BIT_ARRAY = list_downloaded_piece
+        return list_downloaded_piece
 
-#         for e in files: 
-#             num_piece += math.ceil(e["length"] / PIECE_SIZE)
+    else:
+        # Tạo bitarray mới nếu file chưa tồn tại
+        print("Tạo mới bitarray và lưu vào tệp...")
+        num_piece = 0
+        files = Metainfo["info"]["files"]
 
-#         # Tạo bitarray với số lượng miếng
-#         list_downloaded_piece = bitarray(num_piece)
-#         list_downloaded_piece.setall(0)  # Đặt tất cả các bit thành 0 (chưa tải)
+        for e in files: 
+            num_piece += math.ceil(e["length"] / PIECE_SIZE)
 
-#         # Tạo thư mục nếu chưa tồn tại
-#         os.makedirs(directory, exist_ok=True)
+        # Tạo bitarray với số lượng miếng
+        list_downloaded_piece = bitarray(num_piece)
+        list_downloaded_piece.setall(0)  # Đặt tất cả các bit thành 0 (chưa tải)
+
+        # Tạo thư mục nếu chưa tồn tại
+        os.makedirs(directory, exist_ok=True)
         
-#         # Lưu bitarray vào tệp
-#         with open(file_path, 'w') as f:
-#             f.write(list_downloaded_piece.to01())  # Lưu dưới dạng chuỗi nhị phân
+        # Lưu bitarray vào tệp
+        with open(file_path, 'w') as f:
+            f.write(list_downloaded_piece.to01())  # Lưu dưới dạng chuỗi nhị phân
 
-#         # BIT_ARRAY = list_downloaded_piece
-#         return list_downloaded_piece
+        BIT_ARRAY = list_downloaded_piece
+        return list_downloaded_piece
 
 
 
-# Đọc dữ liệu từ tệp và tải vào bitarray
+# # Đọc dữ liệu từ tệp và tải vào bitarray
 # def load_bitarray_from_file(file_path):
 #     # Đọc chuỗi nhị phân từ tệp
 #     with open(file_path, 'r') as f:
@@ -54,22 +60,20 @@ LIST_HASH = ''
 #     return loaded_bitarray
 
 
-
-# def save_bitarray(bitarray, filename): 
-#     # Đường dẫn tệp
-#     directory = 'current_state'
-#     file_path = os.path.join(directory, filename)
+def save_bitarray(bitarray, filename): 
+    # Đường dẫn tệp
+    directory = 'current_state'
+    file_path = os.path.join(directory, filename)
     
-#     # Tạo thư mục nếu chưa tồn tại
-#     os.makedirs(directory, exist_ok=True)
-#     try: 
-#         # Lưu bitarray vào tệp
-#         with open(file_path, 'w') as f:
-#             f.write(bitarray.to01())  # Lưu dưới dạng chuỗi nhị phân
-#         return True
-#     except Exception as e: 
-#         return False
-
+    # Tạo thư mục nếu chưa tồn tại
+    os.makedirs(directory, exist_ok=True)
+    try: 
+        # Lưu bitarray vào tệp
+        with open(file_path, 'w') as f:
+            f.write(bitarray.to01())  # Lưu dưới dạng chuỗi nhị phân
+        return True
+    except Exception as e: 
+        return False
 
 
 def hashSHA1(data):
@@ -108,10 +112,10 @@ def split_file(index, file_path, output_dir, piece_size=PIECE_SIZE):
             # Lưu piece vào file
             with open(piece_filename, 'wb') as piece_file:
                 piece_file.write(piece)
-            # print(type(hashSHA1(piece)))
+            hashcode = hashSHA1(piece)
 
     print(f'File đã được chia và lưu vào thư mục "{output_dir}".')
-    return index
+    return index, hashcode
 
 
 def merge_files(input_dir, target_file):
@@ -159,6 +163,8 @@ def get_file_info(path):
     creationDate = int(time.time())
     file_name = os.path.basename(path)
     index = 0
+    pieces = ''
+
     if os.path.isdir(path):
         # Nếu là thư mục, duyệt qua tất cả tệp tin trong thư mục
         for root, dirs, files in os.walk(path):
@@ -168,8 +174,8 @@ def get_file_info(path):
                 relative_path = os.path.relpath(file_path, path)
                 relative_path_array = relative_path.split(os.sep)
                 output_dir = file_name + SPLIT_CHAR + relative_path.replace("/", SPLIT_CHAR)
-                index = split_file(index, file_path, f'dict/{creationDate}/{output_dir}')
-                
+                index, code = split_file(index, file_path, f'dict/{creationDate}/{output_dir}')
+                pieces += code
                 file_info.append({
                     'length': file_length,
                     'path': relative_path_array
@@ -179,7 +185,9 @@ def get_file_info(path):
         file_length = os.path.getsize(path)
         relative_path = [os.path.basename(path)]
         output_dir = file_name + SPLIT_CHAR + os.path.basename(path)
-        index = split_file(index, path, f'dict/{creationDate}/{output_dir}')
+        index, code = split_file(index, path, f'dict/{creationDate}/{output_dir}')
+        pieces += code
+
         file_info.append({
             'length': file_length,
             'path': relative_path
