@@ -116,8 +116,8 @@ async def get(code):
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
         
-        P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
-        P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start()
+        threading.Thread(P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start())
+        threading.Thread(target=P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory())
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
@@ -151,7 +151,7 @@ async def seed(code):
         subscribe_channel(code)
         
         # P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
-        P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start()
+        threading.Thread(P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start())
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
