@@ -3,10 +3,8 @@ import aiohttp
 import asyncio 
 import signal
 import threading
-from upload import *
 from auth import login, register
 from add_delete_ls import add, delete, ls
-from get_seed_peers import get
 import state as var
 
 
@@ -56,6 +54,7 @@ async def process_command(command):
         case "ls": 
             await ls(var.PEER_ID)
         case "get": 
+            from get_seed_peers import get
             await get(args[1])
         case "help":
             show_help()

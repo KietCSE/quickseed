@@ -1,11 +1,8 @@
 import os
-import time
 import json
 import hashlib
 from fetch_api import *
-from config import HOST, BENCODE
-import bencodepy
-import split as spt
+from config import HOST
 # import bencodepy
 
 def hashSHA1(data):
@@ -78,6 +75,7 @@ def hashSHA1(data):
 
 def create_metainfo(path, announce_url='tracker', author = '123', comment = 'test-torrent'):
     """Tạo file metainfo cho torrent."""
+    import split as spt
     files, creationDate, pieces = spt.get_file_info(path)
     
     # Tính toán các thông số cần thiết

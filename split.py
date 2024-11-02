@@ -140,7 +140,6 @@ def merge_files(input_dir, target_file):
 
 
 #dir: creationDate 
-#filename in metainfo
 def merge(dir, filename):
     is_exit = os.path.isdir('target/' + filename)
     if (is_exit): 
@@ -196,15 +195,6 @@ def get_file_info(path):
 
     return file_info , creationDate, pieces
 
-
-
-# Metainfo = {
-#     "info":{
-#         "name" : "chrome",
-#         "files": [{'length': 11207, 'path': ['popup.css']}, {'length': 5167527, 'path': ['4.1_video_slides.pptx']}, {'length': 440, 'path': ['manifest.json']}, {'length': 2731, 'path': ['icon-with-shadow.svg']}, {'length': 965300, 'path': ['91d29ff3905f37016e4e.jpg']}, {'length': 22987, 'path': ['icon', 'icon.png']}, {'length': 2941, 'path': ['icon', '48.png']}, {'length': 1630, 'path': ['icon', '32.png']}, {'length': 12669, 'path': ['icon', '128.png']}, {'length': 8080, 'path': ['icon', '96.png']}, {'length': 698, 'path': ['icon', '16.png']}, {'length': 12019, 'path': ['src', 'content', 'content.js']}, {'length': 23934, 'path': ['src', 'background', 'background.js']}, {'length': 369907, 'path': ['src', 'popup', 'popup.js']}, {'length': 734, 'path': ['src', 'popup', 'popup.html']}]
-#     }, 
-#     "creationDate":  1730521292
-# }
 
 
 def save_piece(data, index, creationDate):

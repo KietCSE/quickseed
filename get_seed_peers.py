@@ -7,7 +7,6 @@ import bencodepy
 import state as var
 from fetch_api import * 
 from config import HOST
-from add_delete_ls import create_metainfo
 from download import *
 from upload import *
 # list peers to connect 

@@ -8,7 +8,6 @@ import time
 import sys
 from tqdm import tqdm
 from makeChoice import PieceQueue
-from split import save_piece
 from upload import *
 
 class P2PDownloader:
