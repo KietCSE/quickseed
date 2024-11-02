@@ -55,8 +55,7 @@ class MockPeerServer:
     def updateDownloadRateForPeer(self, addr, rate):
         if addr in self.connected:
             self.connected[addr] = rate
-        if addr in self.interested:
-            self.interested[addr] = rate
+        self.interested[addr] = rate
     
     def resetDownloadRate(self):
         for key in self.connected:
