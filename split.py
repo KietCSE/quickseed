@@ -3,6 +3,7 @@ import time
 import math
 from bitarray import bitarray
 import hashlib
+from get_seed_peers import Metainfo
 
 PIECE_SIZE = 1024*128
 
@@ -274,7 +275,7 @@ def main():
     # merge_files(output_directory, 'target')
     # print(get_file_info('/home/tuankiet/Documents/chrome'))
 
-    merge('dict/1730521292', 'chrome')
+    merge('dict/1730530735', 'chrome')
     # print(load_bitarray_from_file("current_state/list1.txt"))
     # data = get_piece(100, 1730426447)
     # save(data, 100, 1730427319)

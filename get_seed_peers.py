@@ -12,7 +12,7 @@ from config import HOST, BENCODE
 PeersList = []
 
 # list metainfo file for multiple download 
-Metainfo = []  
+Metainfo = {}
 
 
 ListHashPeer = []
