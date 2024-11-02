@@ -13,7 +13,7 @@ from add_delete_ls import create_metainfo
 PeersList = []
 
 # list metainfo file for multiple download 
-Metainfo = []  
+Metainfo = {}
 
 ListHashPeer = []
 # using only one for testing
@@ -24,11 +24,16 @@ stop_event = threading.Event()
 
 
 def getLocalIP():
-    # Lấy tên host của máy
-    hostname = socket.gethostname()
-    # Lấy địa chỉ IP cục bộ
-    local_ip = socket.gethostbyname(hostname)
-    return local_ip
+    try:
+        # Kết nối tạm đến một IP và cổng không thật sự gửi dữ liệu để xác định IP LAN
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            # Kết nối đến một IP ngoài (Google DNS server) để lấy địa chỉ IP của mạng LAN
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+        return local_ip
+    except Exception as e:
+        print(f"Lỗi khi lấy IP: {e}")
+        return None
 
 
 def decode_bencoded(data):
@@ -108,6 +113,7 @@ async def get(code):
 
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
+        
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 

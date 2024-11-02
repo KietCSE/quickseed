@@ -3,3 +3,7 @@ __pycache__/
 .env
 .vscode
 *.txt
+dict/
+current_state/
+target/
+
