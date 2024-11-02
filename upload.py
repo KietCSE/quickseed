@@ -1,23 +1,33 @@
 import threading
 import random
 import socket
+from split import get_piece
 
 MAX_REGULAR_UNCHOKE = 4
 REGULAR_UNCHOKE = 10
 OPTIMISTICALLY_UNCHOKE = 30
 MAX_CONNECTION = 15
 
+def mappingFromListToDict(interested: list) -> dict:
+    result: dict = {}
+    try:
+        for peer in interested:
+            result[peer['ip']] = 0
+        return result
+    except Exception as e:
+        print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
+        return {}
 class P2PUploader:
-    def __init__(self, host, port, pieces, interested: dict = {}, unchoke: list = [], connected: dict = {}):
+    def __init__(self, host: str, port: int, pieces: list = [], interested: list = []):
         self.host = host
         self.port = port
         self.pieces = pieces
         
-        self.unchoke = unchoke
-        self.connected = connected
-        self.interested = interested
+        self.unchoke = []
+        self.connected = {}
+        self.interested = mappingFromListToDict(interested=interested)
         
-        self.stop = False
+        self.running = True
 
     def start(self):
         try:
@@ -28,12 +38,15 @@ class P2PUploader:
             server.bind((self.host, self.port))
             server.listen(5)
             print(f"Peer server: started on {self.host}:{self.port}")
-            while not self.stop:
+            while self.running:
                 client_socket, addr = server.accept()
-                if not self.stop:
-                    self.connected[addr] = 0 # add connected peer to dict (key = (ip, port), value = downloadRate)
+                if self.running:
+                    self.connected[addr[0]] = 0 # add connected peer to dict (key = (ip, port), value = downloadRate)
+                    if (len(self.unchoke) < MAX_REGULAR_UNCHOKE) and (addr[0] not in self.unchoke):
+                        self.unchoke.append(addr[0])
                     thread = threading.Thread(target=self.handle_client, args=(client_socket, addr))
                     thread.start()
+                    print(f"{self.port}\n{self.unchoke}\n{self.connected}")
             server.close()
             print("Peer server stopped.")
         except Exception as e:
@@ -43,27 +56,56 @@ class P2PUploader:
         try:
             # Get ip address and port number of client
             request = client_socket.recv(1024).decode("utf-8")
-            print(f"Peer server: Received request: {request}")
-            if ("REQUEST_PIECE" in request) and (addr in self.unchoke):
+            print(f"Peer server {self.port}: Received request: {request}")
+            if ("REQUEST_PIECE::" in request) and (addr[0] in self.unchoke):
                 _, piece_index = request.split("::")
                 piece_index = int(piece_index)
-                if piece_index < len(self.pieces):
-                    print(f"Peer server: Sending piece {piece_index}")
-                    client_socket.send(self.pieces[piece_index])
-            client_socket.close()
+                # if piece_index < len(self.pieces):
+                print(f"Peer server {self.port}: Sending piece {piece_index}")
+                # client_socket.send(get_piece(index=piece_index))
+                piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
+            
+                if piece_data:
+                    try:
+                        client_socket.send(piece_data)
+                    except Exception as e:
+                        print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
+                    # print('test', piece_data)``
+                else:
+                    try:
+                        client_socket.send(b"")  # Send an empty response if the piece isn't found
+                    except Exception as e:
+                        print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
+                # elif ("REQUEST_PIECES" in request):
+                #     pass
+            elif "REQUEST_PIECES" in request:
+                # Trả về danh sách các chỉ số mảnh mà server sở hữu
+                piece_indices = [piece.index for piece in self.pieces]
+                client_socket.send(",".join(map(str, piece_indices)).encode("utf-8"))
+            # client_socket.close()
+            # self.connected.pop(addr)
         except Exception as e:
             print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT: {e}"}\033[0m")
+        finally:
+            client_socket.close()
+            try:
+                if self.connected[addr[0]]:
+                    self.connected.pop(addr[0])
+            except Exception as e:
+                print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT REMOVE: {e}"}\033[0m")
         
     def stop(self):
-        self.stop = True
+        self.running = False
         # Tạo một kết nối giả để thoát khỏi accept() và dừng vòng lặp
         try:
             stop_socket = socket.create_connection((self.host, self.port))
             stop_socket.close()
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR STOP: {e}"}\033[0m")
+            print(f"\033[1;31m{f"ERROR IN STOP: {e}"}\033[0m")
     
     def reEvaluteTopPeersBody(self):
+        if (not self.running) or (not len(self.connected)):
+            return
         try:
             self.unchoke = []
             firstPriority = {}
@@ -94,7 +136,7 @@ class P2PUploader:
             t0.start()
             t0.join()
             t = threading.Timer(REGULAR_UNCHOKE, self.reEvaluteTopPeersBody)
-            while not self.stop:
+            while self.running:
                 t.start()
                 t.join()
                 t = threading.Timer(REGULAR_UNCHOKE, self.reEvaluteTopPeersBody)
@@ -102,6 +144,8 @@ class P2PUploader:
             print(f"\033[1;31m{f"ERROR IN REEVALUTE: {e}"}\033[0m")
 
     def optimisticallyUnchokeBody(self):
+        if not self.running:
+            return
         try:
             if len(self.connected) > MAX_REGULAR_UNCHOKE:
                 connectedKeys = list(self.connected.keys())
@@ -118,7 +162,7 @@ class P2PUploader:
             t0.start()
             t0.join()
             t = threading.Timer(OPTIMISTICALLY_UNCHOKE, self.optimisticallyUnchokeBody)
-            while not self.stop:
+            while self.running:
                 t.start()
                 t.join()
                 t = threading.Timer(OPTIMISTICALLY_UNCHOKE, self.optimisticallyUnchokeBody)

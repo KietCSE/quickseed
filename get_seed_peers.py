@@ -8,12 +8,13 @@ import state as var
 from fetch_api import * 
 from config import HOST
 from add_delete_ls import create_metainfo
-
+from download import *
+from upload import *
 # list peers to connect 
 PeersList = []
 
 # list metainfo file for multiple download 
-Metainfo = []  
+Metainfo = {}  
 
 ListHashPeer = []
 # using only one for testing
@@ -108,6 +109,9 @@ async def get(code):
 
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
+        
+        P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
+        P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList)
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 

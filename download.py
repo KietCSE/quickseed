@@ -8,6 +8,8 @@ import time
 import sys
 from tqdm import tqdm
 from makeChoice import PieceQueue
+from split import save_piece
+from upload import *
 
 class P2PDownloader:
     def __init__(self, file: File, list_peer):
@@ -92,6 +94,7 @@ class P2PDownloader:
                 piece_data = self.download_piece(sock, piece_index)
 
                 if self.verify_piece(piece_data, piece_index):
+                    print('Here')
                     with self.lock:
                         progress_bar.update(len(piece_data))
                         progress_bar.refresh()
@@ -142,76 +145,77 @@ class P2PDownloader:
                 missing_pieces = set(range(self.file.num_pieces)) - set(self.file.piece_idx_downloaded)
                 print("Client: Download incomplete. Missing pieces:", missing_pieces)
 
-# Cấu hình kích thước và dữ liệu cho từng mảnh của nhiều peer
-piece_size = 1024
-pieces_peer1 = [Piece(b"A" * piece_size, 0), Piece(b"B" * piece_size, 1), Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3)]
-pieces_peer2 = [Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3), Piece(b"E" * piece_size, 4), Piece(b"F" * piece_size, 5)]
-pieces_peer3 = [Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3), Piece(b"E" * piece_size, 4), Piece(b"F" * piece_size, 5)]
+# # Cấu hình kích thước và dữ liệu cho từng mảnh của nhiều peer
+# piece_size = 1024
+# pieces_peer1 = [Piece(b"A" * piece_size, 0), Piece(b"B" * piece_size, 1), Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3)]
+# pieces_peer2 = [Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3), Piece(b"E" * piece_size, 4), Piece(b"F" * piece_size, 5)]
+# pieces_peer3 = [Piece(b"C" * piece_size, 2), Piece(b"D" * piece_size, 3), Piece(b"E" * piece_size, 4), Piece(b"F" * piece_size, 5)]
 
-import threading
+# import threading
 
-# Danh sách thông tin cho các peer (IP, cổng và mảnh dữ liệu tương ứng)
-list_peers = [
-    {"ip": "127.0.0.1", "port": 5000, "pieces": pieces_peer1},
-    {"ip": "127.0.0.1", "port": 5001, "pieces": pieces_peer2},
-    {"ip": "127.0.0.1", "port": 5002, "pieces": pieces_peer3}
-]
+# # Danh sách thông tin cho các peer (IP, cổng và mảnh dữ liệu tương ứng)
+# list_peers = [
+#     {"ip": "127.0.0.1", "port": 5000, "pieces": pieces_peer1},
+#     {"ip": "127.0.0.1", "port": 5001, "pieces": pieces_peer2},
+#     {"ip": "127.0.0.1", "port": 5002, "pieces": pieces_peer3}
+# ]
 
-# Tạo các đối tượng server và thread cho từng peer
-peer_servers = []
-server_threads = []
+# # Tạo các đối tượng server và thread cho từng peer
+# peer_servers = []
+# server_threads = []
 
-for info in list_peers:
-    peer_server = MockPeerServer(info["ip"], info["port"], info["pieces"])
-    peer_servers.append(peer_server)
+# for info in list_peers:
+#     peer_server = P2PUploader(info["ip"], info["port"], info["pieces"])
+#     peer_servers.append(peer_server)
     
-    server_thread = threading.Thread(target=peer_server.start)
-    server_threads.append(server_thread)
+#     server_thread = threading.Thread(target=peer_server.start)
+#     server_threads.append(server_thread)
     
-    # Bắt đầu chạy server
-    server_thread.start()
+#     # Bắt đầu chạy server
+#     server_thread.start()
 
-# Mã băm cho mỗi mảnh để mô phỏng tính toàn vẹn
-piece_hashes = [
-    hashlib.sha1(pieces_peer1[0].data).hexdigest(),
-    hashlib.sha1(pieces_peer1[1].data).hexdigest(),
-    hashlib.sha1(pieces_peer1[2].data).hexdigest(),
-    hashlib.sha1(pieces_peer1[3].data).hexdigest(),
-    hashlib.sha1(pieces_peer2[2].data).hexdigest(),
-    hashlib.sha1(pieces_peer2[3].data).hexdigest(),
-]
+# # Mã băm cho mỗi mảnh để mô phỏng tính toàn vẹn
+# piece_hashes = [
+#     hashlib.sha1(pieces_peer1[0].data).hexdigest(),
+#     hashlib.sha1(pieces_peer1[1].data).hexdigest(),
+#     hashlib.sha1(pieces_peer1[2].data).hexdigest(),
+#     hashlib.sha1(pieces_peer1[3].data).hexdigest(),
+#     hashlib.sha1(pieces_peer2[2].data).hexdigest(),
+#     hashlib.sha1(pieces_peer2[3].data).hexdigest(),
+# ]
 
-# Metainfo giả lập cấu trúc thư mục với hai tệp có nhiều mảnh
-metainfo = {
-    "info": {
-        "piece length": piece_size,
-        "length": piece_size * 6,
-        "name": "multi_peer_test_file.txt",
-        "pieces": piece_hashes
-    },
-    "files": [
-        {"length": int(1024*3.5), "path": ["folder", "file1.txt"]},
-        {"length": int(1024*2.5), "path": ["folder", "file2.txt"]}
-    ]
-}
+# # Metainfo giả lập cấu trúc thư mục với hai tệp có nhiều mảnh
+# metainfo = {
+#     "creationDate": 12345678,
+#     "info": {
+#         "piece length": piece_size,
+#         "length": piece_size * 6,
+#         "name": "multi_peer_test_file.txt",
+#         "pieces": piece_hashes,
+#     },
+#     "files": [
+#         {"length": int(piece_size*2.5), "path": ["folder", "file1.txt"]},
+#         {"length": int(piece_size*3.5), "path": ["folder", "file2.txt"]}
+#     ]
+# }
 
-peersList = [
-    {"ip": "127.0.0.1", "port": 5000,},
-    {"ip": "127.0.0.1", "port": 5001},
-    {"ip": "127.0.0.1", "port": 5002}
-]
+# peersList = [
+#     {"ip": "127.0.0.1", "port": 5000,},
+#     {"ip": "127.0.0.1", "port": 5001},
+#     {"ip": "127.0.0.1", "port": 5002}
+# ]
 
-# Khởi tạo đối tượng File và P2PDownloader và bắt đầu tải xuống
-file = File(metainfo)
-downloader = P2PDownloader(file, peersList)
-downloader.download_muti_directory()
+# # Khởi tạo đối tượng File và P2PDownloader và bắt đầu tải xuống
+# file = File(metainfo)
+# downloader = P2PDownloader(file, peersList)
+# downloader.download_muti_directory()
 
-# Đóng các server sau khi hoàn tất tải xuống
-for peer_server in peer_servers:
-    peer_server.stop()
+# # Đóng các server sau khi hoàn tất tải xuống
+# # for peer_server in peer_servers:
+# #     peer_server.stop()
 
-for server_thread in server_threads:
-    server_thread.join()
+# for server_thread in server_threads:
+#     server_thread.join()
 
-# # In kết quả kiểm tra
-P2PDownloader.print_f(downloader)
+# # # In kết quả kiểm tra
+# P2PDownloader.print_f(downloader)

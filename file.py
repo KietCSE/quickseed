@@ -1,5 +1,6 @@
 import os
 import math
+from split import save_piece
 
 class Piece:
     def __init__(self, data: bytes, index: int):
@@ -14,7 +15,7 @@ class File:
         self.total_size = sum(file['length'] for file in self.files)
         self.num_pieces = math.ceil(self.total_size / self.piece_size)
         self.piece_hash = meta_info['info']['pieces']
-        
+        self.creationDate = meta_info['creationDate']
         # Lưu trữ danh sách các mảnh đã và chưa tải xuống
         self.pieces = []
         self.piece_idx_downloaded = []
@@ -85,6 +86,7 @@ class File:
             self.piece_idx_downloaded.append(piece.index)
             self.piece_idx_not_downloaded.remove(piece.index)
             self.write_piece_to_file(piece)
+            # save_piece(creationDate=self.creationDate, data=piece.data, index=piece.index)
 
     def write_piece_to_file(self, piece: Piece):
         """Ghi dữ liệu vào file đúng vị trí trong cấu trúc thư mục."""

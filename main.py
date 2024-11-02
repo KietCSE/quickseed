@@ -3,6 +3,7 @@ import aiohttp
 import asyncio 
 import signal
 import threading
+from upload import *
 from auth import login, register
 from add_delete_ls import add, delete, ls
 from get_seed_peers import get
@@ -71,7 +72,7 @@ async def main():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
-                if command == 'exit': break
+                if command == 'exit': self_kill()
                 if command == 'logout': await main() 
                 if command: await process_command(command)
     elif choice == '2':
