@@ -70,15 +70,16 @@ async def main():
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
                 if command == 'exit': break
+                if command == 'logout': await main() 
                 if command: await process_command(command)
     elif choice == '2':
         if await login():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
-
                 # stop current process
-                if command == 'exit': self_kill()    
+                if command == 'exit': self_kill()   
+                if command == 'logout': await main() 
                 if command: await process_command(command)
     elif choice.lower() == 'exit':
         print("Exiting the program.")
