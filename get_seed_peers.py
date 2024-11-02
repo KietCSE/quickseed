@@ -73,8 +73,12 @@ def subscribe_worker(code):
         # Lắng nghe sự kiện và xử lý
         for event in client.events():
             PeersList = event.data
-            PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
+            PeersList = json.loads(PeersList)
+            for peer in PeersList: print((peer))
             print(PeersList)
+            print(type(PeersList))
+
+            # PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
 
     except requests.exceptions.RequestException as e:
         print(f"Error with server connection: {e}")
@@ -104,12 +108,13 @@ async def get(code):
     }
     response = await postAPI(f'{HOST}/join', data)
     if (response.get("status")): 
-        PeersList = response.get('peers')
-        PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
+        PeersList = response.get("peers")
         print(PeersList)
+        print(type(PeersList))
+        
+        PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
-
-        Metainfo = response.get('metainfo')
+        Metainfo = response.get("metainfo")
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
         hashpieces = Metainfo["info"]["pieces"]
@@ -120,8 +125,8 @@ async def get(code):
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
         
-        threading.Thread(P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start())
-        threading.Thread(target=P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory())
+        threading.Thread(P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start()).start()
+        threading.Thread(target=P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()).start()
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
@@ -142,9 +147,10 @@ async def seed(code):
     response = await postAPI(f'{HOST}/join', data)
     if (response.get("status")): 
         PeersList = response.get('peers')
-        PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
         print(PeersList)
+        PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
+        print(type(PeersList))
         Metainfo = response.get('metainfo')
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
@@ -157,14 +163,15 @@ async def seed(code):
         subscribe_channel(code)
         
         # P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
-        threading.Thread(P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start())
+        threading.Thread(P2PUploader(host="0.0.0.0", port=var.PORT, interested=PeersList).start()).start()
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
 
 
 async def main(): 
-    await get('e3f4b4aed9c346c76bab6afa60fd6d5198164797')
+    # await get('e3f4b4aed9c346c76bab6afa60fd6d5198164797')
+    print(getLocalIP())
 
 
 if __name__ == '__main__':
