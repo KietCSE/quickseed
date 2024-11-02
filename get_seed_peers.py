@@ -111,12 +111,12 @@ async def get(code):
     if (response.get("status")): 
 
         PeersList = response.get('peers')
+        PeersList = json.loads(PeersList)
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
         print(PeersList)
         print(type(PeersList))
         
-        PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
         Metainfo = response.get("metainfo")
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
