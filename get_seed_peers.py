@@ -14,11 +14,7 @@ from upload import *
 PeersList = []
 
 # list metainfo file for multiple download 
-<<<<<<< HEAD
 Metainfo = {}  
-=======
-Metainfo = {}
->>>>>>> tuankiet
 
 ListHashPeer = []
 # using only one for testing
