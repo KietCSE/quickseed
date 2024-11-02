@@ -4,7 +4,7 @@ import math
 from bitarray import bitarray
 import hashlib
 
-PIECE_SIZE = 1024
+PIECE_SIZE = 1024*128
 
 SPLIT_CHAR = '---'
 
