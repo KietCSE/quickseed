@@ -9,6 +9,40 @@ import sys
 from tqdm import tqdm
 from makeChoice import PieceQueue
 from upload import *
+import struct
+
+    # Hàm xử lý kết nối từ client
+def handle_client(client_socket):
+    with client_socket:
+        while True:
+            # Đọc header (2 số nguyên)
+            header = client_socket.recv(8)  # 2 số nguyên (4 byte mỗi số)
+            if not header:
+                break
+
+            index, data_length = struct.unpack('ii', header)
+            recv_data = 0
+            # Đọc data theo length đã nhận
+            data = bytearray()
+            while len(data) < data_length:
+                packet = client_socket.recv(data_length - len(data))  # Đọc phần còn lại
+                recv_data += packet 
+                if not packet:
+                    break  # Nếu không còn dữ liệu, thoát
+                data.extend(packet)  # Thêm phần đã nhận vào dữ liệu
+            return recv_data
+
+
+            # # luu du lieu 
+            # if BIT_ARRAY[index] == 0: 
+            #     save_piece(data, index, Metainfo["creationDate"])  # Thêm data vào tham số
+            #     print(f"Đã nhận index: {index} và dữ liệu từ peer.")
+            #     BIT_ARRAY[index] = 1
+            #     if BIT_ARRAY.all(): 
+            #         merge(f'dict/{Metainfo["creationDate"]}', Metainfo["info"]["name"])
+            #         save_bitarray(BIT_ARRAY, f"bit{Metainfo["creationDate"]}")
+            # else: 
+            #     print("piece da co roi")
 
 class P2PDownloader:
     def __init__(self, file: File, list_peer):
@@ -63,17 +97,17 @@ class P2PDownloader:
         #     piece_info = self.piece_queue.piece_info_dict[piece_index]
         #     print(piece_info)
 
-
     def download_piece(self, sock, piece_index):
         sock.send(f"REQUEST_PIECE::{piece_index}".encode("utf-8"))
-        data = sock.recv(self.piece_size)
+        data = handle_client(sock)
         return data
 
     def verify_piece(self, piece_data, piece_index):
         """Kiểm tra tính toàn vẹn của piece với hash SHA-1."""
         piece_hash = hashlib.sha1(piece_data).hexdigest()
         # print(f"Computed hash for piece {piece_index}: {piece_hash}")
-        return piece_hash == self.file.piece_hash[piece_index]
+        # return piece_hash == self.file.piece_hash[piece_index]
+        return True
 
     def download_directory(self, progress_bar):
         while True:

@@ -3,37 +3,6 @@ import math
 from split import save_piece
 import json
 
-# # Hàm xử lý kết nối từ client
-# def handle_client(client_socket):
-#     with client_socket:
-#         while True:
-#             # Đọc header (2 số nguyên)
-#             header = client_socket.recv(8)  # 2 số nguyên (4 byte mỗi số)
-#             if not header:
-#                 break
-
-#             index, data_length = struct.unpack('ii', header)
-
-#             # Đọc data theo length đã nhận
-#             data = bytearray()
-#             while len(data) < data_length:
-#                 packet = client_socket.recv(data_length - len(data))  # Đọc phần còn lại
-#                 if not packet:
-#                     break  # Nếu không còn dữ liệu, thoát
-#                 data.extend(packet)  # Thêm phần đã nhận vào dữ liệu
-
-
-#             # luu du lieu 
-#             if BIT_ARRAY[index] == 0: 
-#                 save_piece(data, index, Metainfo["creationDate"])  # Thêm data vào tham số
-#                 print(f"Đã nhận index: {index} và dữ liệu từ peer.")
-#                 BIT_ARRAY[index] = 1
-#                 if BIT_ARRAY.all(): 
-#                     merge(f'dict/{Metainfo["creationDate"]}', Metainfo["info"]["name"])
-#                     save_bitarray(BIT_ARRAY, f"bit{Metainfo["creationDate"]}")
-#             else: 
-#                 print("piece da co roi")
-
 
 class Piece:
     def __init__(self, data: bytes, index: int):
