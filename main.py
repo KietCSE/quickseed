@@ -7,7 +7,8 @@ from auth import login, register
 from add_delete_ls import add, delete, ls
 from get_seed_peers import get, seed
 import state as var
-
+import sys
+import ctypes
 
 def text_color(command, color): 
     match color: 
@@ -92,8 +93,19 @@ async def main():
         print(text_color("Invalid choice. Please choose 1 or 2.", "red"))
 
 
+# def self_kill():
+    # os.kill(os.getpid(), signal.SIGKILL)
 def self_kill():
-    os.kill(os.getpid(), signal.SIGKILL)
+    if os.name == 'nt':  # Kiểm tra nếu chạy trên Windows
+        # Lấy ID của tiến trình hiện tại
+        pid = os.getpid()
+        # Mở tiến trình hiện tại với quyền để kết thúc
+        handle = ctypes.windll.kernel32.OpenProcess(1, False, pid)
+        # Kết thúc tiến trình
+        ctypes.windll.kernel32.TerminateProcess(handle, -1)
+    else:
+        # Trên Unix-based (như Linux, macOS), dùng SIGKILL
+        os.kill(os.getpid(), signal.SIGKILL)
 
 
 if __name__ == "__main__":

@@ -64,7 +64,8 @@ class P2PDownloader:
     def request_pieces_info(self, sock):
         """Yêu cầu danh sách các mảnh mà peer sở hữu."""
         sock.send("REQUEST_PIECES".encode("utf-8"))
-        data = sock.recv(4096)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
+        data = sock.recv(1024 * 1024)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
+        print(data)
         pieces_info = list(map(int, data.decode("utf-8").split(",")))
         # print(pieces_info)
         return pieces_info
@@ -171,8 +172,7 @@ class P2PDownloader:
                 try:
                     merge(f'dict/{self.file.creationDate}', self.file.metainfo['info']['name'])
                 except Exception as e:
-                    print("")
-                    # print(f"\033[1;31m{f"ERROR IN MERGE: {e}"}\033[0m")
+                    print(f"\033[1;31m{f"ERROR IN MERGE: {e}"}\033[0m")
             else:
                 missing_pieces = set(range(self.file.num_pieces)) - set(self.file.piece_idx_downloaded)
                 print("Client: Download incomplete. Missing pieces:", missing_pieces)
