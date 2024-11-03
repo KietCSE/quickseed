@@ -75,7 +75,7 @@ class P2PUploader:
                     thread = threading.Thread(target=self.handle_client, args=(client_socket, addr))
                     thread.start()
                     print(f"{self.port}\n{self.unchoke}\n{self.connected}")
-            server.close()
+            # server.close()
             print("Peer server stopped.")
         except Exception as e:
             print(f"\033[1;31m{f"ERROR IN START: {e}"}\033[0m")

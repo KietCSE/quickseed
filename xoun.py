@@ -10,4 +10,4 @@ def save_numbers_to_file(filename):
         file.write(numbers_str)
 
 # Sử dụng hàm để lưu vào tệp
-save_numbers_to_file('status.txt')
+save_numbers_to_file('status/1730606701.txt')
