@@ -1,5 +1,5 @@
 import heapq
-
+import random
 class PieceInfo:
     """Thông tin về một mảnh và các peer sở hữu nó."""
     def __init__(self, piece_index):
@@ -53,7 +53,7 @@ class PieceQueue:
             _, piece_index = heapq.heappop(self.piece_queue)
             piece_info = self.piece_info_dict.get(piece_index)
             if piece_info:
-                peer = piece_info.get_random_peer()
+                peer = piece_info.peers[random.randint(0, len(piece_info.peers) - 1)]
                 if peer:
                     return piece_index, peer
         return None, None  # Trả về None nếu không còn mảnh hoặc peer hợp lệ
