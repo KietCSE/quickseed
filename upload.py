@@ -3,11 +3,18 @@ import random
 import socket
 from split import get_piece
 import json
+import struct
 
 MAX_REGULAR_UNCHOKE = 4
 REGULAR_UNCHOKE = 10
 OPTIMISTICALLY_UNCHOKE = 30
 MAX_CONNECTION = 15
+
+def package_data(data, index): 
+    data_length = len(data)
+    packed_header = struct.pack('ii', index, data_length)  # 2 số nguyên
+    packed_data = packed_header + data  # Nối header với data
+    return packed_data
 
 def mappingFromListToDict(interested: list) -> dict:
     result: dict = {}
