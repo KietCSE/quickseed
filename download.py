@@ -10,6 +10,23 @@ import sys
 from tqdm import tqdm
 from makeChoice import PieceQueue
 from upload import *
+# from fetch_api import * 
+from config import HOST
+# import asyncio
+import requests
+
+
+def call_async_fetchAPI(hashcode):
+    loop = asyncio.get_event_loop()
+    
+    # Tạo task cho hàm bất đồng bộ trong event loop đang chạy
+    task = loop.create_task(fetchAPI(f'{HOST}/downloaded/{hashcode}'))
+
+    # Chạy task và lấy kết quả
+    return loop.run_until_complete(task)
+
+# import get_seed_peers as gsp
+
 # Hàm xử lý kết nối từ client
 def handle_client(client_socket):
     with client_socket:
@@ -64,7 +81,7 @@ class P2PDownloader:
     def request_pieces_info(self, sock):
         """Yêu cầu danh sách các mảnh mà peer sở hữu."""
         sock.send("REQUEST_PIECES".encode("utf-8"))
-        data = sock.recv(4096)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
+        data = sock.recv(1024*1024)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
         pieces_info = list(map(int, data.decode("utf-8").split(",")))
         # print(pieces_info)
         return pieces_info
@@ -168,6 +185,10 @@ class P2PDownloader:
         with self.lock:
             if len(self.file.piece_idx_downloaded) == self.file.num_pieces:
                 print("Client: Directory download completed.")
+
+                response = requests.get(f'{HOST}/downloaded/{self.file.metainfo["hashCode"]}')
+                print(response.json())
+
                 try:
                     merge(f'dict/{self.file.creationDate}', self.file.metainfo['info']['name'])
                 except Exception as e:
@@ -176,6 +197,8 @@ class P2PDownloader:
             else:
                 missing_pieces = set(range(self.file.num_pieces)) - set(self.file.piece_idx_downloaded)
                 print("Client: Download incomplete. Missing pieces:", missing_pieces)
+
+
 
 # # Cấu hình kích thước và dữ liệu cho từng mảnh của nhiều peer
 # piece_size = 1024
