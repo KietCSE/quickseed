@@ -122,6 +122,7 @@ def split_file(index, file_path, output_dir, piece_size=PIECE_SIZE):
 
 def merge_files(input_dir, target_file):
     target_dir = os.path.dirname(target_file)  # Lấy đường dẫn thư mục của target_file
+    # print(input_dir, target_file)
     os.makedirs(target_dir, exist_ok=True) 
 
     # Lấy danh sách các file piece và sắp xếp theo thứ tự tên
@@ -136,12 +137,13 @@ def merge_files(input_dir, target_file):
             piece_path = os.path.join(input_dir, piece)
             with open(piece_path, 'rb') as piece_file:
                 target.write(piece_file.read())  # Ghi nội dung của mỗi piece vào file hoàn chỉnh
-    print(f'File đã được ghép lại và lưu tại "{target_file}".')
+    # print(f'File đã được ghép lại và lưu tại "{target_file}".')
 
 
 
 #dir: creationDate 
 def merge(dir, filename):
+    # print(dir, filename, 'in merge')
     is_exit = os.path.isdir('target/' + filename)
     if (is_exit): 
         print("Exit folder with the same name!!")
@@ -155,7 +157,7 @@ def merge(dir, filename):
             target_file = "target/" + current_folder_name.replace(SPLIT_CHAR, '/')
             # Gọi hàm merge_files cho thư mục con
             merge_files(input_dir, target_file)
-
+    # print('success')
 
 
 #split file and store in dict
@@ -206,7 +208,7 @@ def save_piece(data, index, creationDate, metainfo):
     is_save = False
 
     for piece in files:
-        max_piece = math.ceil(piece["length"] / PIECE_SIZE)
+        max_piece = math.ceil(piece["length"] / int(metainfo['info']['pieceLength']))
         count_piece += max_piece
         # print("xet trong ", count_piece)
         try: 
@@ -216,10 +218,12 @@ def save_piece(data, index, creationDate, metainfo):
 
                 os.makedirs(path_file, exist_ok=True)
 
-                if os.path.exists(os.path.dirname(path_file)):
-                    print(f"Thư mục đã được tạo thành công: {os.path.dirname(path_file)}")
-                else:
-                    print(f"Không thể tạo thư mục: {os.path.dirname(path_file)}")
+                # if os.path.exists(os.path.dirname(path_file)):
+                #     print(f"Thư mục đã được tạo thành công: {os.path.dirname(path_file)}")
+                # else:
+                #     print(f"Không thể tạo thư mục: {os.path.dirname(path_file)}")
+                if not os.path.exists(os.path.dirname(path_file)):
+                    print(f"\033[1;31m{f"CREATE FOLDER FAIL: {path_file}"}\033[0m")
 
                 #luu piece 
                 piece_filename = os.path.join(path_file, f'piece_{index}.bin')
@@ -244,7 +248,7 @@ def get_piece(index, creationDate, metainfo):
     print(files)
 
     for piece in files:
-        max_piece = math.ceil(piece["length"] / PIECE_SIZE)
+        max_piece = math.ceil(piece["length"] / int(metainfo['info']['pieceLength']))
         count_piece += max_piece
         print("xet trong ", count_piece)
         # print()

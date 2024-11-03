@@ -3,7 +3,7 @@ import random
 import socket
 from split import get_piece
 import json
-
+import struct
 
 MAX_REGULAR_UNCHOKE = 4
 REGULAR_UNCHOKE = 10

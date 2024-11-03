@@ -2,6 +2,16 @@ import os
 import math
 from split import save_piece
 import json
+from datetime import datetime
+def time_transfer(time): 
+    # Chuỗi thời gian ISO 8601
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    dt = datetime.fromisoformat(time.replace("Z", "+00:00"))
+
+    # Chuyển đổi đối tượng datetime thành timestamp (giây)
+    creationDate = int(dt.timestamp() * 1000)  # Nhân với 1000 để có mili giây
+    return creationDate
 
 # # Hàm xử lý kết nối từ client
 # def handle_client(client_socket):
@@ -48,14 +58,14 @@ class File:
         self.total_size = sum(file['length'] for file in self.files)
         self.num_pieces = math.ceil(self.total_size / self.piece_size)
         self.piece_hash = meta_info['info']['pieces']
-        self.creationDate = meta_info['creationDate']
+        self.creationDate = time_transfer(meta_info['creationDate'])
         # Lưu trữ danh sách các mảnh đã và chưa tải xuống
         self.pieces = []
         self.piece_idx_downloaded = []
         self.piece_idx_not_downloaded = list(range(self.num_pieces))
 
         # Đường dẫn tới file lưu trạng thái tải xuống
-        self.status_file = "status.txt"
+        self.status_file = f'status/{self.creationDate}.txt'
 
         # Tạo thư mục gốc và các file trống trong cấu trúc thư mục
         self._initialize_empty_files()
@@ -111,6 +121,8 @@ class File:
 
     def save_downloaded_status(self):
         """Ghi danh sách các piece đã tải xuống vào file trạng thái."""
+        # target_dir = os.path.dirname(self.)  # Lấy đường dẫn thư mục của target_file
+            # os.makedirs(target_dir, exist_ok=True)
         with open(self.status_file, "w") as f:
             downloaded = sorted(self.piece_idx_downloaded)
             json.dump(downloaded, f)
