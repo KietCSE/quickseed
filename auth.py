@@ -17,6 +17,7 @@ async def login():
         if (response.get("status")): 
             print("Login successfully!")
             var.PEER_ID = response.get("peerId")
+            print(var.PEER_ID)
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")
@@ -40,7 +41,8 @@ async def register():
         response = await postAPI(f'{HOST}/register', data)
         if (response.get("status")): 
             print("Register successfully!")
-            PEER_ID = response.get("peerId")
+            var.PEER_ID = response.get("peerId")
+            print(var.PEER_ID)
             return True
         else: 
             print(f"\033[1;31m{response.get('message')}\033[0m")

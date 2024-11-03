@@ -5,7 +5,9 @@ import signal
 import threading
 from auth import login, register
 from add_delete_ls import add, delete, ls
-from get_seed_peers import get
+from get_seed_peers import get, seed
+import state as var
+
 
 def text_color(command, color): 
     match color: 
@@ -51,9 +53,12 @@ async def process_command(command):
         case "delete":
             await delete(args[1])
         case "ls": 
-            await ls("123")
+            await ls(var.PEER_ID)
         case "get": 
+            from get_seed_peers import get
             await get(args[1])
+        case "seed": 
+            await seed(args[1])
         case "help":
             show_help()
         case "clear":
@@ -69,16 +74,17 @@ async def main():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
-                if command == 'exit': break
+                if command == 'exit': self_kill()
+                if command == 'logout': await main() 
                 if command: await process_command(command)
     elif choice == '2':
         if await login():
             while True:
                 prompt = "\033[1;32m[Torrent]\033[0m \033[1;93m➜\033[0m "
                 command = input(prompt).strip() 
-
                 # stop current process
-                if command == 'exit': self_kill()    
+                if command == 'exit': self_kill()   
+                if command == 'logout': await main() 
                 if command: await process_command(command)
     elif choice.lower() == 'exit':
         print("Exiting the program.")
