@@ -64,17 +64,42 @@ class P2PUploader:
                 _, piece_index = request.split("::")
                 piece_index = int(piece_index)
                 print(f"Peer server {self.port}: Sending piece {piece_index}")
-                piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
-                if piece_data:
-                    try:
-                        client_socket.send(piece_data)
-                    except Exception as e:
-                        print(f"\033[1;31mERROR IN HANDLE CLIENT SEND PIECE: {e}\033[0m")
-                else:
-                    try:
-                        client_socket.send(b"")
-                    except Exception as e:
-                        print(f"\033[1;31mERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}\033[0m")
+# <<<<<<< HEAD
+#                 piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
+#                 if piece_data:
+#                     try:
+#                         client_socket.send(piece_data)
+#                     except Exception as e:
+#                         print(f"\033[1;31mERROR IN HANDLE CLIENT SEND PIECE: {e}\033[0m")
+#                 else:
+#                     try:
+#                         client_socket.send(b"")
+#                     except Exception as e:
+#                         print(f"\033[1;31mERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}\033[0m")
+# =======
+                # client_socket.send(get_piece(index=piece_index))
+                # piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
+                try: 
+                    print(type(piece_index), piece_index, self.creationDate)
+                    piece_data = get_piece(index=piece_index, creationDate=self.creationDate, metainfo=self.metainfo)
+
+                    print(len(piece_data))
+                    if piece_data:
+                        try:
+                            data = package_data(piece_data, piece_index)
+                            client_socket.send(data)
+                        except Exception as e:
+                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
+                        # print('test', piece_data)``
+                    else:
+                        try:
+                            client_socket.send(b"")  # Send an empty response if the piece isn't found
+                        except Exception as e:
+                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
+                except Exception as e: print("here ", e)
+                # elif ("REQUEST_PIECES" in request):
+                #     pass
+# >>>>>>> 1f7b9c2af302a22ee2cb4245c032091e910f34f6
             elif "REQUEST_PIECES" in request:
                 try:
                     with open("status.txt", "r") as f:
