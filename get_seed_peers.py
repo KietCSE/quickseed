@@ -71,6 +71,7 @@ def convert_bytes_to_str(data):
 
 # create long-live http connection for server sent event (SSE) to tracker 
 def subscribe_worker(code): 
+    global PeersList
     print("Start subcribe worker")
     url = f'{HOST}/subscribe/{var.PEER_ID}/{code}'  
     try:
@@ -105,6 +106,8 @@ def subscribe_channel(code):
 
 # join torrent network in tracker and receive a list of peer + metainfo file
 async def get(code): 
+    var.STATUS = 'leecher'
+    global PeersList
     data = {
         "hashCode": code,
         "peerId": var.PEER_ID,
@@ -158,6 +161,7 @@ async def get(code):
 
 
 async def seed(code): 
+    var.STATUS = 'seeder'
     data = {
         "hashCode": code,
         "peerId": var.PEER_ID,

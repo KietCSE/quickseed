@@ -3,6 +3,9 @@ import math
 from split import save_piece
 import json
 from datetime import datetime
+import get_seed_peers as gsp
+
+
 def time_transfer(time): 
     # Chuỗi thời gian ISO 8601
     # Chuyển đổi chuỗi sang đối tượng datetime
@@ -106,6 +109,7 @@ class File:
             with open(self.status_file, "r") as f:
                 # line = f.readline().strip()
                     line = json.loads(f.read())
+                    
                 # if line.startswith("downloaded_pieces = "):
                     # pieces_str = line.split(" = ")[1].strip()
                     
@@ -123,6 +127,8 @@ class File:
         """Ghi danh sách các piece đã tải xuống vào file trạng thái."""
         # target_dir = os.path.dirname(self.)  # Lấy đường dẫn thư mục của target_file
             # os.makedirs(target_dir, exist_ok=True)
+        print(f"\033[1;31m{gsp.PeersList}\033[0m")
+        
         with open(self.status_file, "w") as f:
             downloaded = sorted(self.piece_idx_downloaded)
             json.dump(downloaded, f)

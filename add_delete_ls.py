@@ -124,6 +124,10 @@ def create_metainfo(path, announce_url='tracker', author = '123', comment = 'tes
 
 
 async def add(path):
+    if path[0] == '"': path = path[1:]  # Bỏ ký tự đầu tiên
+
+    if path[-1] == '"': path = path[:-1]  # Bỏ ký tự cuối cùng
+
     metainfo, filename = create_metainfo(path)   #can them du lieu o doan nay  
     
     # if BENCODE: 

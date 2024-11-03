@@ -6,6 +6,7 @@ import threading
 from auth import login, register
 from add_delete_ls import add, delete, ls
 from get_seed_peers import get, seed
+from scrape import scrape
 import state as var
 import sys
 import ctypes
@@ -64,6 +65,8 @@ async def process_command(command):
             show_help()
         case "clear":
             clear_screen()
+        case "scrape":
+            await scrape(args[1])
         case _:
             print(f"Unrecognized command: {command}. Type 'help' for available commands.")
 
@@ -94,7 +97,12 @@ async def main():
 
 
 # def self_kill():
+<<<<<<< HEAD
     # os.kill(os.getpid(), signal.SIGKILL)
+=======
+#     os.kill(os.getpid(), signal.SIGKILL)
+
+>>>>>>> 5a2a041198e50b7dcf2c5df5757e11eae7fcb06f
 def self_kill():
     if os.name == 'nt':  # Kiểm tra nếu chạy trên Windows
         # Lấy ID của tiến trình hiện tại
