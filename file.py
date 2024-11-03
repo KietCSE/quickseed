@@ -3,6 +3,19 @@ import math
 from split import save_piece
 import json
 
+from datetime import datetime
+
+def time_transfer(time): 
+    # Chuỗi thời gian ISO 8601
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    dt = datetime.fromisoformat(time.replace("Z", "+00:00"))
+
+    # Chuyển đổi đối tượng datetime thành timestamp (giây)
+    creationDate = int(dt.timestamp() * 1000)  # Nhân với 1000 để có mili giây
+    return creationDate
+
+
 class Piece:
     def __init__(self, data: bytes, index: int):
         self.index = index
@@ -16,7 +29,7 @@ class File:
         self.total_size = sum(file['length'] for file in self.files)
         self.num_pieces = math.ceil(self.total_size / self.piece_size)
         self.piece_hash = meta_info['info']['pieces']
-        self.creationDate = meta_info['creationDate']
+        self.creationDate = time_transfer(meta_info['creationDate'])
         # Lưu trữ danh sách các mảnh đã và chưa tải xuống
         self.pieces = []
         self.piece_idx_downloaded = []

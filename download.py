@@ -35,7 +35,7 @@ class P2PDownloader:
     def request_pieces_info(self, sock):
         """Yêu cầu danh sách các mảnh mà peer sở hữu."""
         sock.send("REQUEST_PIECES".encode("utf-8"))
-        data = sock.recv(4096)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
+        data = sock.recv(2048)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
         pieces_info = list(map(int, data.decode("utf-8").split(",")))
         # print(pieces_info)
         return pieces_info
@@ -66,7 +66,7 @@ class P2PDownloader:
 
     def download_piece(self, sock, piece_index):
         sock.send(f"REQUEST_PIECE::{piece_index}".encode("utf-8"))
-        data = sock.recv(self.piece_size)
+        data = sock.recv(128 * 1024)
         return data
 
     def verify_piece(self, piece_data, piece_index):
@@ -89,10 +89,10 @@ class P2PDownloader:
 
             try:
                 # print(f"Piece:{piece_index}",peer)
-                sock = self.connect_to_peer(peer)
-                piece_data = self.download_piece(sock, piece_index)
+                    sock = self.connect_to_peer(peer)
+                    piece_data = self.download_piece(sock, piece_index)
 
-                if self.verify_piece(piece_data, piece_index):
+                # if self.verify_piece(piece_data, piece_index):
                     with self.lock:
                         progress_bar.update(len(piece_data))
                         progress_bar.refresh()

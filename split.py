@@ -272,7 +272,7 @@ def main():
     # merge_files(output_directory, 'target')
     # print(get_file_info('/home/tuankiet/Documents/chrome'))
 
-    merge('dict/1730530735', 'chrome')
+    merge('dict/1730554904', 'video.mp4')
     # print(load_bitarray_from_file("current_state/list1.txt"))
     # data = get_piece(100, 1730426447)
     # save(data, 100, 1730427319)
