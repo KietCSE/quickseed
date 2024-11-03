@@ -3,7 +3,7 @@ import time
 import math
 from bitarray import bitarray
 import hashlib
-from get_seed_peers import Metainfo
+# from get_seed_peers import Metainfo
 import json
 
 PIECE_SIZE = 1024*128

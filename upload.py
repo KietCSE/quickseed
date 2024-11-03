@@ -27,7 +27,7 @@ def mappingFromListToDict(interested: list) -> dict:
         return {}
 
 class P2PUploader:
-    def __init__(self, host: str, port: int, pieces: list = [], interested: list = []):
+    def __init__(self, metainfo, host: str, port: int, pieces: list = [], interested: list = []):
         self.host = host
         self.port = port
         self.pieces = pieces
@@ -38,6 +38,7 @@ class P2PUploader:
         
         self.running = True
         self.status_file = "status.txt"
+        
 
     def start(self):
         try:
