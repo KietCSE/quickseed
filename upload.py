@@ -95,11 +95,12 @@ class P2PUploader:
                 try: 
                     print(type(piece_index), piece_index, self.creationDate)
                     piece_data = get_piece(index=piece_index, creationDate=self.creationDate, metainfo=self.metainfo)
-               
+
                     print(len(piece_data))
                     if piece_data:
                         try:
-                            client_socket.send(piece_data)
+                            data = package_data(piece_data, piece_index)
+                            client_socket.send(data)
                         except Exception as e:
                             print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
                         # print('test', piece_data)``
