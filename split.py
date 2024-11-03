@@ -206,7 +206,7 @@ def save_piece(data, index, creationDate, metainfo):
     is_save = False
 
     for piece in files:
-        max_piece = math.ceil(piece["length"] / PIECE_SIZE)
+        max_piece = math.ceil(piece["length"] / int(metainfo["info"]['pieceLength']))
         count_piece += max_piece
         # print("xet trong ", count_piece)
         try: 
@@ -244,7 +244,7 @@ def get_piece(index, creationDate, metainfo):
     print(files)
 
     for piece in files:
-        max_piece = math.ceil(piece["length"] / PIECE_SIZE)
+        max_piece = math.ceil(piece["length"] / int(metainfo["info"]["pieceLength"]))
         count_piece += max_piece
         print("xet trong ", count_piece)
         # print()

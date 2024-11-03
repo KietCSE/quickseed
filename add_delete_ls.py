@@ -1,6 +1,7 @@
 import os
 import json
 import hashlib
+import math
 from fetch_api import *
 from config import HOST
 import state as var
@@ -21,6 +22,18 @@ def hashSHA1(data):
     # Tạo hash SHA-1
     sha1_hash = hashlib.sha1(data).hexdigest()  # Chuyển đổi sang chuỗi hex
     return sha1_hash
+
+
+def save_status_file(path, num_piece):
+    target_dir = os.path.dirname(path)  # Lấy đường dẫn thư mục của target_file
+    os.makedirs(target_dir, exist_ok=True) 
+
+    numbers = list(range(num_piece))  
+    # Chuyển đổi danh sách thành chuỗi theo định dạng yêu cầu
+    numbers_str = "[" + ", ".join(map(str, numbers)) + "]"
+    # Mở tệp và ghi vào đó
+    with open(path, 'w') as file:
+        file.write(numbers_str)
 
 
 # def get_file_info(path):
@@ -79,6 +92,13 @@ def create_metainfo(path, announce_url='tracker', author = '123', comment = 'tes
     import split as spt
     files, creationDate, pieces = spt.get_file_info(path)
     
+    piece_count = 0
+    for file in files: 
+        piece_count += math.ceil(int(file['length']) / int(spt.PIECE_SIZE))
+    
+    save_status_file(f'status/{creationDate}.txt', piece_count)
+
+
     # Tính toán các thông số cần thiết
     piece_length = spt.PIECE_SIZE  # 512 KB
     filename = os.path.basename(path)
@@ -105,7 +125,7 @@ def create_metainfo(path, announce_url='tracker', author = '123', comment = 'tes
 
 async def add(path):
     metainfo, filename = create_metainfo(path)   #can them du lieu o doan nay  
-
+    
     # if BENCODE: 
     #     metainfo = bencodepy.encode(metainfo)
 

@@ -3,6 +3,7 @@ import random
 import socket
 from split import get_piece
 import json
+import struct
 
 
 MAX_REGULAR_UNCHOKE = 4
@@ -115,7 +116,7 @@ class P2PUploader:
             elif "REQUEST_PIECES" in request:
                 # Trả về danh sách các chỉ số mảnh mà server sở hữu
                 try:
-                    with open("status.txt", "r") as f:
+                    with open(f"status/{self.creationDate}.txt", "r") as f:
                         downloaded = json.loads(f.read())
                     # piece_indices = [piece.index for piece in self.pieces]
                     # client_socket.send(",".join(map(str, piece_indices)).encode("utf-8"))
@@ -124,10 +125,13 @@ class P2PUploader:
                     print(f"\033[1;31m{f"ERROR IN READ STATUS (UPLOAD): {e}"}\033[0m")        
             # client_socket.close()
             # self.connected.pop(addr)
+            else:
+                print("else")
         except Exception as e:
             print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT: {e}"}\033[0m")
         finally:
-            client_socket.close()
+            # print("close")
+            # client_socket.close()
             try:
                 if self.connected[addr[0]]:
                     self.connected.pop(addr[0])
