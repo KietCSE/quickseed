@@ -249,6 +249,7 @@ def get_piece(index, creationDate, metainfo):
 
     for piece in files:
         max_piece = math.ceil(piece["length"] / int(metainfo['info']['pieceLength']))
+
         count_piece += max_piece
         print("xet trong ", count_piece)
         # print()

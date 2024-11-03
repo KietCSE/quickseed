@@ -20,6 +20,16 @@ ListHashPeer = []
 # using only one for testing
 
 
+def time_transfer(time): 
+    # Chuỗi thời gian ISO 8601
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    # Chuyển đổi chuỗi sang đối tượng datetime
+    dt = datetime.fromisoformat(time.replace("Z", "+00:00"))
+
+    # Chuyển đổi đối tượng datetime thành timestamp (giây)
+    creationDate = int(dt.timestamp() * 1000)  # Nhân với 1000 để có mili giây
+    return creationDate
+
 
 stop_event = threading.Event()
 
@@ -119,6 +129,19 @@ async def get(code):
         
 
         Metainfo = response.get("metainfo")
+        filename = time_transfer(Metainfo['creationDate'])
+        path_file = f'status/{filename}.txt'
+        target_dir = os.path.dirname(path_file)  # Lấy đường dẫn thư mục của target_file
+        os.makedirs(target_dir, exist_ok=True) 
+        
+        if not os.path.exists(path_file):
+            with open(path_file, 'w') as f:
+                f.write("[]")
+            print("dat tao file status")
+        else: 
+            print("dat ton tai file status")
+
+
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
         hashpieces = Metainfo["info"]["pieces"]
