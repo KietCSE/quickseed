@@ -24,6 +24,12 @@ def time_transfer(time):
     return creationDate
 
 
+def package_data(data, index): 
+    data_length = len(data)
+    packed_header = struct.pack('ii', index, data_length)  # 2 số nguyên
+    packed_data = packed_header + data  # Nối header với data
+    return packed_data
+
 
 def mappingFromListToDict(interested: list) -> dict:
     result: dict = {}
