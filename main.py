@@ -97,12 +97,6 @@ async def main():
 
 
 # def self_kill():
-<<<<<<< HEAD
-    # os.kill(os.getpid(), signal.SIGKILL)
-=======
-#     os.kill(os.getpid(), signal.SIGKILL)
-
->>>>>>> 5a2a041198e50b7dcf2c5df5757e11eae7fcb06f
 def self_kill():
     if os.name == 'nt':  # Kiểm tra nếu chạy trên Windows
         # Lấy ID của tiến trình hiện tại
