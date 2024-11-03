@@ -68,7 +68,7 @@ class File:
         self.status_file = f'status/{self.creationDate}.txt'
 
         # Tạo thư mục gốc và các file trống trong cấu trúc thư mục
-        self._initialize_empty_files()
+        # self._initialize_empty_files()
         self.metainfo = meta_info
 
     def _initialize_empty_files(self):
