@@ -3,6 +3,7 @@ import json
 import hashlib
 from fetch_api import *
 from config import HOST
+import state as var
 # import bencodepy
 
 def hashSHA1(data):
@@ -91,7 +92,7 @@ def create_metainfo(path, announce_url='tracker', author = '123', comment = 'tes
     code = hashSHA1(info_data)
 
     metainfo = {
-        "author": author,
+        "author": var.PEER_ID,
         "hashCode": code,
         "announce": announce_url,
         "info": info_data,
@@ -109,9 +110,9 @@ async def add(path):
     #     metainfo = bencodepy.encode(metainfo)
 
     response = await postAPI(f'{HOST}/metainfo', metainfo)
-    print(response)
+    # print(response)
     if (response.get("status")): 
-        print(f"Added  {metainfo.get('hashcode')}  {filename}")
+        print(f"Added  {metainfo.get('hashCode')}  {filename}")
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
