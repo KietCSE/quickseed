@@ -44,6 +44,26 @@ def handle_client(client_socket):
             # else: 
             #     print("piece da co roi")
 
+            index, data_length = struct.unpack('ii', header)
+            # Đọc data theo length đã nhận
+            data = bytearray()
+            while len(data) < data_length:
+                packet = client_socket.recv(data_length - len(data))  # Đọc phần còn lại
+                if not packet:
+                    break  # Nếu không còn dữ liệu, thoát
+                data.extend(packet)  # Thêm phần đã nhận vào dữ liệu
+            return data
+
+#             # luu du lieu 
+#             if BIT_ARRAY[index] == 0: 
+#                 save_piece(data, index, Metainfo["creationDate"])  # Thêm data vào tham số
+#                 print(f"Đã nhận index: {index} và dữ liệu từ peer.")
+#                 BIT_ARRAY[index] = 1
+#                 if BIT_ARRAY.all(): 
+#                     merge(f'dict/{Metainfo["creationDate"]}', Metainfo["info"]["name"])
+#                     save_bitarray(BIT_ARRAY, f"bit{Metainfo["creationDate"]}")
+#             else: 
+#                 print("piece da co roi")
 class P2PDownloader:
     def __init__(self, file: File, list_peer):
         self.file = file
@@ -99,11 +119,15 @@ class P2PDownloader:
 
     def download_piece(self, sock, piece_index):
         sock.send(f"REQUEST_PIECE::{piece_index}".encode("utf-8"))
+<<<<<<< HEAD
 # <<<<<<< HEAD
 #         data = sock.recv(128 * 1024)
 # =======
         data = handle_client(sock)
 # >>>>>>> ce59a555126de3f17626de5c7e39b9b9ca45dd79
+=======
+        data = handle_client(sock)
+>>>>>>> new
         return data
 
     def verify_piece(self, piece_data, piece_index):
