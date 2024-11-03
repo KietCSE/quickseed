@@ -223,7 +223,8 @@ def save_piece(data, index, creationDate, metainfo):
                 # else:
                 #     print(f"Không thể tạo thư mục: {os.path.dirname(path_file)}")
                 if not os.path.exists(os.path.dirname(path_file)):
-                    print(f"\033[1;31m{f"CREATE FOLDER FAIL: {path_file}"}\033[0m")
+                    print("")
+                    # print(f"\033[1;31m{f"CREATE FOLDER FAIL: {path_file}"}\033[0m")
 
                 #luu piece 
                 piece_filename = os.path.join(path_file, f'piece_{index}.bin')

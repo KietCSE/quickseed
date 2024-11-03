@@ -171,7 +171,8 @@ class P2PDownloader:
                 try:
                     merge(f'dict/{self.file.creationDate}', self.file.metainfo['info']['name'])
                 except Exception as e:
-                    print(f"\033[1;31m{f"ERROR IN MERGE: {e}"}\033[0m")
+                    print("")
+                    # print(f"\033[1;31m{f"ERROR IN MERGE: {e}"}\033[0m")
             else:
                 missing_pieces = set(range(self.file.num_pieces)) - set(self.file.piece_idx_downloaded)
                 print("Client: Download incomplete. Missing pieces:", missing_pieces)

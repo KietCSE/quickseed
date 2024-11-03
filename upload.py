@@ -38,7 +38,8 @@ def mappingFromListToDict(interested: list) -> dict:
             result[peer['ip']] = 0
         return result
     except Exception as e:
-        print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
+        print("")
+        # print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
         return {}
 class P2PUploader:
     def __init__(self,metainfo, host: str, port: int, pieces: list = [], interested: list = []):
@@ -78,7 +79,8 @@ class P2PUploader:
             server.close()
             print("Peer server stopped.")
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN START: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN START: {e}"}\033[0m")
 
     def handle_client(self, client_socket, addr):
         try:
@@ -102,13 +104,15 @@ class P2PUploader:
                             data = package_data(piece_data, piece_index)
                             client_socket.send(data)
                         except Exception as e:
-                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
+                            print("")
+                            # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
                         # print('test', piece_data)``
                     else:
                         try:
                             client_socket.send(b"")  # Send an empty response if the piece isn't found
                         except Exception as e:
-                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
+                            print("")
+                            # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
                 except Exception as e: print("here ", e)
                 # elif ("REQUEST_PIECES" in request):
                 #     pass
@@ -121,13 +125,15 @@ class P2PUploader:
                     # client_socket.send(",".join(map(str, piece_indices)).encode("utf-8"))
                     client_socket.send(",".join(map(str, downloaded)).encode("utf-8"))
                 except Exception as e:
-                    print(f"\033[1;31m{f"ERROR IN READ STATUS (UPLOAD): {e}"}\033[0m")        
+                    print("")
+                    # print(f"\033[1;31m{f"ERROR IN READ STATUS (UPLOAD): {e}"}\033[0m")        
             # client_socket.close()
             # self.connected.pop(addr)
             else:
                 print("else")
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT: {e}"}\033[0m")
         finally:
             # print("close")
             # client_socket.close()
@@ -135,7 +141,8 @@ class P2PUploader:
                 if self.connected[addr[0]]:
                     self.connected.pop(addr[0])
             except Exception as e:
-                print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT REMOVE: {e}"}\033[0m")
+                print("")
+                # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT REMOVE: {e}"}\033[0m")
         
     def stop(self):
         self.running = False
@@ -144,7 +151,8 @@ class P2PUploader:
             stop_socket = socket.create_connection((self.host, self.port))
             stop_socket.close()
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN STOP: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN STOP: {e}"}\033[0m")
     
     def reEvaluteTopPeersBody(self):
         if (not self.running) or (not len(self.connected)):
@@ -171,7 +179,8 @@ class P2PUploader:
                 sortedFirstPriority = sorted(firstPriority.items(), key = lambda item : item[1], reverse = True)
                 self.unchoke = [peer[0] for peer in sortedFirstPriority[: MAX_REGULAR_UNCHOKE]]
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN REEVALUTE BODY: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN REEVALUTE BODY: {e}"}\033[0m")
 
     def reEvaluteTopPeers(self):
         try:
@@ -184,7 +193,8 @@ class P2PUploader:
                 t.join()
                 t = threading.Timer(REGULAR_UNCHOKE, self.reEvaluteTopPeersBody)
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN REEVALUTE: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN REEVALUTE: {e}"}\033[0m")
 
     def optimisticallyUnchokeBody(self):
         if not self.running:
@@ -197,7 +207,8 @@ class P2PUploader:
                     pass
                 self.unchoke.append(randomPeer)
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY BODY: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY BODY: {e}"}\033[0m")
             
     def optimisticallyUnchoke(self):
         try:
@@ -210,7 +221,8 @@ class P2PUploader:
                 t.join()
                 t = threading.Timer(OPTIMISTICALLY_UNCHOKE, self.optimisticallyUnchokeBody)
         except Exception as e:
-            print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY: {e}"}\033[0m")
+            print("")
+            # print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY: {e}"}\033[0m")
     
     def updateDownloadRateForPeer(self, addr, rate = 0):
         if addr in self.connected:
