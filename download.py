@@ -14,6 +14,7 @@ from upload import *
 from config import HOST
 # import asyncio
 import requests
+from config import TEST
 
 
 def call_async_fetchAPI(hashcode):
@@ -99,7 +100,8 @@ class P2PDownloader:
                     self.piece_queue.add_piece(piece_index, peer)
 
             except Exception as e:
-                print(f"Error connecting to peer {peer}: {e}")
+                print(f"\033[1;31m{f'ERROR CONNECTING TO PEER: {peer}: {e}'}\033[0m")
+                # print(f"Error connecting to peer {peer}: {e}")
                 continue
 
         # Xây dựng hàng đợi theo chiến lược "rarest first"
@@ -151,7 +153,8 @@ class P2PDownloader:
                         self.file.save_downloaded_status()
                         sock.close()
             except Exception as e:
-                print(f"Error downloading piece {piece_index} from {peer}: {e}")
+                # print(f"Error downloading piece {piece_index} from {peer}: {e}")
+                print(f"\033[1;31m{f'ERROR DOWNLOADING PIECE: {piece_index} from {peer}'}\033[0m") 
                 continue
 
             # Nếu mảnh không hợp lệ, đưa lại vào hàng đợi để thử tải lại
@@ -184,19 +187,21 @@ class P2PDownloader:
         # Kiểm tra nếu tất cả các mảnh đã được tải thành công
         with self.lock:
             if len(self.file.piece_idx_downloaded) == self.file.num_pieces:
-                print("Client: Directory download completed.")
+                # print("Client: Directory download completed.")
+                print(f"\033[1;34m{'CLIENT: DOWNLOAD COMPLETED'}\033[0m")
 
                 response = requests.get(f'{HOST}/downloaded/{self.file.metainfo["hashCode"]}')
-                print(response.json())
+                if TEST:
+                    print(response.json())
 
                 try:
                     merge(f'dict/{self.file.creationDate}', self.file.metainfo['info']['name'])
                 except Exception as e:
-                    print("")
-                    # print(f"\033[1;31m{f"ERROR IN MERGE: {e}"}\033[0m")
+                    print(f"\033[1;31m{f"ERROR IN MERGE: {e}"}\033[0m")
             else:
                 missing_pieces = set(range(self.file.num_pieces)) - set(self.file.piece_idx_downloaded)
-                print("Client: Download incomplete. Missing pieces:", missing_pieces)
+                # print("Client: Download incomplete. Missing pieces:", missing_pieces)
+                print(f"\033[1;31m{f'CLIENT: DOWNLOAD INCOMPLETE. MISSING PIECES: {missing_pieces}'}\033[0m")
 
 
 

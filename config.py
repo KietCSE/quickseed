@@ -6,5 +6,7 @@ load_dotenv()
 
 # Lấy các giá trị từ biến môi trường
 HOST = os.getenv('HOST')
+TEST = False
+# TEST = int(os.getenv('TEST'))
 
 BENCODE = True

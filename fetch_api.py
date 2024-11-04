@@ -11,12 +11,15 @@ async def fetchAPI(url):
                     data = await response.json()
                     return data
                 except aiohttp.ContentTypeError:
-                    print("JSON is invalid")
+                    # print("JSON is invalid")
+                    print(f"\033[1;31m{'FETCH: JSON is invalid'}\033[0m")
                     return None
     except aiohttp.ClientConnectionError:
-        print("Error occur when connecting with server")
+        # print("Error occur when connecting with server")
+        print(f"\033[1;31m{'ERROR OCCUR WHEN CONNECTING WITH SERVER'}\033[0m")
     except Exception as e:
-        print(f"Something went wrong!!")
+        # print(f"Something went wrong!!")
+        print(f'\033[1;31m{'SOMETHING WENT WRONG!!'}\033[0m')
         return None
 
 
@@ -28,11 +31,24 @@ async def postAPI(url, data):
                     data = await response.json()
                     return data
                 except aiohttp.ContentTypeError:
-                    print("JSON is invalid")
-                    return None 
+                    # print("JSON is invalid")
+                    print(f"\033[1;31m{'FETCH: JSON is invalid'}\033[0m")
+                    return None
     except aiohttp.ClientConnectionError:
-        print("Error occur when connecting with server")
+        # print("Error occur when connecting with server")
+        print(f"\033[1;31m{'ERROR OCCUR WHEN CONNECTING WITH SERVER'}\033[0m")
     except Exception as e:
-        print(f"Something went wrong!!")
+        # print(f"Something went wrong!!")
+        print(f'\033[1;31m{'SOMETHING WENT WRONG!!'}\033[0m')
         return None
-            
+     #             try: 
+    #                 data = await response.json()
+    #                 return data
+    #             except aiohttp.ContentTypeError:
+    #                 print("JSON is invalid")
+    #                 return None 
+    # except aiohttp.ClientConnectionError:
+    #     print("Error occur when connecting with server")
+    # except Exception as e:
+    #     print(f"Something went wrong!!")
+    #     return None       

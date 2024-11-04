@@ -9,7 +9,7 @@ from fetch_api import *
 from config import HOST
 from download import *
 from upload import *
-from tabulate import tabulate
+from config import TEST
 
 # list peers to connect 
 PeersList = [
@@ -74,7 +74,8 @@ def convert_bytes_to_str(data):
 # create long-live http connection for server sent event (SSE) to tracker 
 def subscribe_worker(code): 
     global PeersList
-    print("Start subcribe worker")
+    if TEST:
+        print("Start subcribe worker")
     url = f'{HOST}/subscribe/{var.PEER_ID}/{code}'  
     try:
         response = requests.get(url, stream=True)
@@ -89,8 +90,9 @@ def subscribe_worker(code):
             # PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
             PeersList = json.loads(PeersList)
             # for peer in PeersList: print((peer))
-            print(PeersList)
-            print(type(PeersList))
+            if TEST:
+                print(PeersList)
+                print(type(PeersList))
 
             # PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
 
@@ -129,8 +131,9 @@ async def get(code):
         # PeersList = json.loads(PeersList)
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
-        print(PeersList)
-        print(type(PeersList))
+        if TEST:
+            print(PeersList)
+            print(type(PeersList))
         
 
         Metainfo = response.get("metainfo")
@@ -142,9 +145,11 @@ async def get(code):
         if not os.path.exists(path_file):
             with open(path_file, 'w') as f:
                 f.write("[]")
-            print("dat tao file status")
+            if TEST:
+                print("Da tao file status")
         else: 
-            print("dat ton tai file status")
+            # print("dat ton tai file status")
+            print(f"\033[1;31m{'DA TON TAI FILE STATUS'}'\033[0m")
 
 
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
@@ -152,7 +157,8 @@ async def get(code):
         hashpieces = Metainfo["info"]["pieces"]
         ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
         # print(ListHashPeer)
-        print("You join successfully!")
+        # print("You join successfully!")
+        print(f"\033[1;34m{'YOU JOINED SUCCESSFULLY'}\033[0m")
 
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
@@ -181,22 +187,26 @@ async def seed(code):
     if (response.get("status")): 
         PeersList = response.get('peers')
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
-        print(PeersList)
+        if TEST:
+            print(PeersList)
 
-        print(type(PeersList))
+            print(type(PeersList))
         Metainfo = response.get('metainfo')
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
         hashpieces = Metainfo["info"]["pieces"]
         ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
         # print(ListHashPeer)
-        print("You join successfully!")
+        # print("You join successfully!")
+        # print(f"\033[1;34m{'YOU JOINED SUCCESSFULLY'}\033[0m")
+
 
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
         
         # P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
         threading.Thread(target=P2PUploader(metainfo=Metainfo, host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
+        print('You are seeding for other peers...')
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
@@ -212,10 +222,3 @@ def peers():
     for peer in PeersList:
         print(f"{peer['peerId']:<25} {peer['ip']:<15} {peer['port']:<5}")
     print("")
-
-async def main(): 
-    # await get('e3f4b4aed9c346c76bab6afa60fd6d5198164797')
-    print(getLocalIP())
-
-if __name__ == '__main__':
-    asyncio.run(main()) 

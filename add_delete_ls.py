@@ -176,16 +176,3 @@ async def ls(peerId):
 
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
-
-
-
-async def main():
-    # path = input(">> ")
-    result, _ = create_metainfo('/home/tuankiet/Documents/CODE/sample-cli')
-    print(result)
-
-
-if __name__ == '__main__': 
-    asyncio.run(main())
-
-

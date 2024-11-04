@@ -11,7 +11,6 @@ import state as var
 import sys
 import ctypes
 
-
 def text_color(command, color): 
     match color: 
         case 'blue': return f"\033[1;34m{command}\033[0m"
@@ -69,7 +68,7 @@ async def process_command(command):
         case "scrape":
             await scrape(args[1])
         case _:
-            print(f"Unrecognized command: {command}. Type 'help' for available commands.")
+            print(text_color(f"Unrecognized command: {command}. Type 'help' for available commands.", 'red'))
 
 
 async def main():
@@ -98,8 +97,6 @@ async def main():
 
 
 # def self_kill():
-#     os.kill(os.getpid(), signal.SIGKILL)
-
 def self_kill():
     if os.name == 'nt':  # Kiểm tra nếu chạy trên Windows
         # Lấy ID của tiến trình hiện tại
