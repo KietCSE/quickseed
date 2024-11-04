@@ -25,13 +25,11 @@ def show_help():
     help_text = """
     Available commands:
     -------------------------
-    add             - Publish your documents into network
+    add     <path>  - Publish your documents into network
     delete  <code>  - Delete your published documents
     ls              - List all your published documents 
     seed    <code>  - Start sharing your documents 
     get     <code>  - Start downloading documents
-    stop    <code>  - Stop downloading/sharing documents 
-    show            - Show all progress of download
     peers   <code>  - List all peers you are connecting 
     scrape  <code>  - Check currrent infomation of torrent network
     help            - Display available commands

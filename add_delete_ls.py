@@ -161,6 +161,8 @@ async def ls(peerId):
         hash_code_width = 45
         time_save_width = 30
 
+        print("\n")
+
         print(f"{'File Name'.ljust(file_name_width)} {'Hash Code'.ljust(hash_code_width)} {'Time Save'.ljust(time_save_width)}")
         print('-' * (file_name_width + hash_code_width + time_save_width))
 
@@ -170,6 +172,8 @@ async def ls(peerId):
             time_save = data.get("timeSave")
             
             print(f"{file_name.ljust(file_name_width)} {hash_code.ljust(hash_code_width)} {time_save.ljust(time_save_width)}")
+        print("\n")
+
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
 

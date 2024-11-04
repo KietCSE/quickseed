@@ -13,16 +13,6 @@ from tabulate import tabulate
 
 # list peers to connect 
 PeersList = [
-    {
-        "peerId": "-MYAPP-123456789012",
-        "ip": "192.168.1.10",
-        "port": 6881
-    },
-    {
-        "peerId": "-MYAPP-234567890123",
-        "ip": "192.168.1.11",
-        "port": 6882
-    }
 ]
 
 # list metainfo file for multiple download 
