@@ -5,7 +5,7 @@ import signal
 import threading
 from auth import login, register
 from add_delete_ls import add, delete, ls
-from get_seed_peers import get, seed
+from get_seed_peers import get, seed, peers
 from scrape import scrape
 import state as var
 import sys
@@ -64,6 +64,8 @@ async def process_command(command):
             await seed(args[1])
         case "help":
             show_help()
+        case "peers": 
+            peers()
         case "clear":
             clear_screen()
         case "scrape":

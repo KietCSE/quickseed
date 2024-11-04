@@ -9,9 +9,21 @@ from fetch_api import *
 from config import HOST
 from download import *
 from upload import *
+from tabulate import tabulate
 
 # list peers to connect 
-PeersList = []
+PeersList = [
+    {
+        "peerId": "-MYAPP-123456789012",
+        "ip": "192.168.1.10",
+        "port": 6881
+    },
+    {
+        "peerId": "-MYAPP-234567890123",
+        "ip": "192.168.1.11",
+        "port": 6882
+    }
+]
 
 # list metainfo file for multiple download 
 Metainfo = {}  
@@ -161,6 +173,7 @@ async def get(code):
 
 
 async def seed(code): 
+    global PeersList
     var.STATUS = 'seeder'
     data = {
         "hashCode": code,
@@ -198,6 +211,17 @@ async def seed(code):
         print(f"\033[1;31m{response.get('message')}\033[0m")
 
 
+def peers(): 
+    global PeersList
+    print("")
+    # In tiêu đề với khoảng cách giữa các cột
+    print(f"{'PEER ID':<25} {'IP ADDRESS':<15} {'PORT':<5}")
+    print("-" * 47)  # Đường gạch ngang ngăn cách tiêu đề
+
+    # In từng hàng dữ liệu
+    for peer in PeersList:
+        print(f"{peer['peerId']:<25} {peer['ip']:<15} {peer['port']:<5}")
+    print("")
 
 async def main(): 
     # await get('e3f4b4aed9c346c76bab6afa60fd6d5198164797')
