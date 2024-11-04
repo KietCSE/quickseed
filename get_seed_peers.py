@@ -72,7 +72,8 @@ def convert_bytes_to_str(data):
 # create long-live http connection for server sent event (SSE) to tracker 
 def subscribe_worker(code): 
     global PeersList
-    print("Start subcribe worker")
+    if TEST:
+        print("Start subcribe worker")
     url = f'{HOST}/subscribe/{var.PEER_ID}/{code}'  
     try:
         response = requests.get(url, stream=True)
@@ -194,7 +195,7 @@ async def seed(code):
         ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
         # print(ListHashPeer)
         # print("You join successfully!")
-        print(f"\033[1;34m{'YOU JOINED SUCCESSFULLY'}\033[0m")
+        # print(f"\033[1;34m{'YOU JOINED SUCCESSFULLY'}\033[0m")
 
 
         # create a thread to listen to notification from tracker 
@@ -202,5 +203,6 @@ async def seed(code):
         
         # P2PDownloader(file=File(Metainfo), list_peer=PeersList).download_muti_directory()
         threading.Thread(target=P2PUploader(metainfo=Metainfo, host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
+        print('You are seeding for other peers...')
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
