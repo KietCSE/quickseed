@@ -3,7 +3,7 @@ import time
 import math
 from bitarray import bitarray
 import hashlib
-
+from config import TEST
 PIECE_SIZE = 1024*128
 
 SPLIT_CHAR = '---'
@@ -19,7 +19,8 @@ def create_or_load_bitarray(filename):
     # Kiểm tra nếu file đã tồn tại
     if os.path.exists(file_path):
         # Tải bitarray từ file
-        print("Đang tải bitarray từ tệp hiện có...")
+        if TEST:
+            print("Đang tải bitarray từ tệp hiện có...")
         with open(file_path, 'r') as f:
             binary_string = f.read()  # Đọc dữ liệu nhị phân từ tệp
         # Chuyển đổi chuỗi nhị phân thành bitarray
@@ -29,7 +30,8 @@ def create_or_load_bitarray(filename):
 
     else:
         # Tạo bitarray mới nếu file chưa tồn tại
-        print("Tạo mới bitarray và lưu vào tệp...")
+        if TEST:
+            print("Tạo mới bitarray và lưu vào tệp...")
         num_piece = 0
         files = Metainfo["info"]["files"]
 
@@ -116,7 +118,8 @@ def split_file(index, file_path, output_dir, piece_size=PIECE_SIZE):
                 piece_file.write(piece)
             hashcode = hashSHA1(piece)
 
-    print(f'File đã được chia và lưu vào thư mục "{output_dir}".')
+    if TEST:
+        print(f'File đã được chia và lưu vào thư mục "{output_dir}".')
     return index, hashcode
 
 
@@ -146,7 +149,8 @@ def merge(dir, filename):
     # print(dir, filename, 'in merge')
     is_exit = os.path.isdir('target/' + filename)
     if (is_exit): 
-        print("Exit folder with the same name!!")
+        # print("Exit folder with the same name!!")
+        print(f"\033[1;31m{f'EXISTS FOLDER WITH THE SAME NAME!!'}\033[0m")
         return 
 
     for root, dirs, files in os.walk(dir):
@@ -223,8 +227,7 @@ def save_piece(data, index, creationDate, metainfo):
                 # else:
                 #     print(f"Không thể tạo thư mục: {os.path.dirname(path_file)}")
                 if not os.path.exists(os.path.dirname(path_file)):
-                    print("")
-                    # print(f"\033[1;31m{f"CREATE FOLDER FAIL: {path_file}"}\033[0m")
+                    print(f"\033[1;31m{f"CREATE FOLDER FAIL: {path_file}"}\033[0m")
 
                 #luu piece 
                 piece_filename = os.path.join(path_file, f'piece_{index}.bin')
@@ -234,37 +237,43 @@ def save_piece(data, index, creationDate, metainfo):
                     is_save = True
                     break
         except Exception as e:  # Sửa lại cách xử lý ngoại lệ
-            print(f"Lỗi khi lưu piece: {e}")
+            # print(f"Lỗi khi lưu piece: {e}")
+            print(f"\033[1;31m{f'ERROR WHILE SAVE PIECE: {e}'}\033[0m")
 
-    if not is_save: print("khong luu duoc piece")
-
+    if not is_save: 
+        print(f"\033[1;31m{f'CANNOT SAVE PIECE'}\033[0m")
 
 
 def get_piece(index, creationDate, metainfo):
     
-    print("get peer")
-    print(metainfo)
+    if TEST:
+        print("get peer")
+        print(metainfo)
     files =  metainfo["info"]["files"]
     count_piece = -1
-    print(files)
+    if TEST:
+        print(files)
 
     for piece in files:
         max_piece = math.ceil(piece["length"] / int(metainfo['info']['pieceLength']))
 
         count_piece += max_piece
-        print("xet trong ", count_piece)
+        if TEST:
+            print("xet trong ", count_piece)
         # print()
         if (index <= count_piece): 
             relative_path = SPLIT_CHAR.join(piece["path"])
             path_file = f'dict/{creationDate}/{metainfo["info"]["name"]}{SPLIT_CHAR}{relative_path}/piece_{index}.bin'
-            print(path_file)
+            if TEST:
+                print(path_file)
         # Open the file and read the data inside
             try:
                 with open(path_file, 'rb') as file:
                     data = file.read()  # Read the binary data from the piece file
                     return data  # Return the read data
             except FileNotFoundError:
-                print(f"File not found: {path_file}")
+                # print(f"File not found: {path_file}")
+                print(f"\033[1;31m{f'FILE NOT FOUND: {path_file}'}\033[0m")
                 return None  # Return None if the file does not exist
     return None
 

@@ -68,7 +68,7 @@ async def process_command(command):
         case "scrape":
             await scrape(args[1])
         case _:
-            print(f"Unrecognized command: {command}. Type 'help' for available commands.")
+            print(text_color(f"Unrecognized command: {command}. Type 'help' for available commands.", 'red'))
 
 
 async def main():

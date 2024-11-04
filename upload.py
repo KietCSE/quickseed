@@ -4,7 +4,7 @@ import socket
 from split import get_piece
 import json
 import struct
-
+from config import TEST
 MAX_REGULAR_UNCHOKE = 4
 REGULAR_UNCHOKE = 10
 OPTIMISTICALLY_UNCHOKE = 30
@@ -38,8 +38,8 @@ def mappingFromListToDict(interested: list) -> dict:
             result[peer['ip']] = 0
         return result
     except Exception as e:
-        print("")
-        # print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
+        # print("")
+        print(f"\033[1;31m{f"ERROR IN MAPPING: {e}"}\033[0m")
         return {}
 class P2PUploader:
     def __init__(self,metainfo, host: str, port: int, pieces: list = [], interested: list = []):
@@ -65,55 +65,65 @@ class P2PUploader:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server.bind((self.host, self.port))
             server.listen(5)
-            print(f"Peer server: started on {self.host}:{self.port}")
+            if TEST:
+                print(f"Peer server: started on {self.host}:{self.port}")
             while self.running:
                 client_socket, addr = server.accept()
                 if self.running:
-                    print(f"\033[1;32m{addr}\033[0m")
+                    if TEST:
+                        print(f"\033[1;32m{addr}\033[0m")
                     self.connected[addr[0]] = 0 # add connected peer to dict (key = (ip, port), value = downloadRate)
                     if (len(self.unchoke) < MAX_REGULAR_UNCHOKE) and (addr[0] not in self.unchoke):
                         self.unchoke.append(addr[0])
                     thread = threading.Thread(target=self.handle_client, args=(client_socket, addr))
                     thread.start()
-                    print(f"{self.port}\n{self.unchoke}\n{self.connected}")
+                    if TEST:
+                        print(f"{self.port}\n{self.unchoke}\n{self.connected}")
             # server.close()
-            print("Peer server stopped.")
+            if TEST:
+                print("Peer server stopped.")
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN START: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN START: {e}"}\033[0m")
 
     def handle_client(self, client_socket, addr):
         try:
             # Get ip address and port number of client
             request = client_socket.recv(1024).decode("utf-8")
-            print(f"Peer server {self.port}: Received request: {request}")
+            if TEST:
+                print(f"Peer server {self.port}: Received request: {request}")
             if ("REQUEST_PIECE::" in request) and (addr[0] in self.unchoke):
                 _, piece_index = request.split("::")
                 piece_index = int(piece_index)
                 # if piece_index < len(self.pieces):
-                print(f"Peer server {self.port}: Sending piece {piece_index}")
+                if TEST:
+                    print(f"Peer server {self.port}: Sending piece {piece_index}")
                 # client_socket.send(get_piece(index=piece_index))
                 # piece_data = next((piece.data for piece in self.pieces if piece.index == piece_index), None)
                 try: 
-                    print(type(piece_index), piece_index, self.creationDate)
+                    if TEST:
+                        print(type(piece_index), piece_index, self.creationDate)
                     piece_data = get_piece(index=piece_index, creationDate=self.creationDate, metainfo=self.metainfo)
 
-                    print(len(piece_data))
+                    if TEST:
+                        print(len(piece_data))
                     if piece_data:
                         try:
                             data = package_data(piece_data, piece_index)
                             client_socket.send(data)
                         except Exception as e:
-                            print("")
-                            # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
+                            # print("")
+                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE: {e}"}\033[0m")
                         # print('test', piece_data)``
                     else:
                         try:
                             client_socket.send(b"")  # Send an empty response if the piece isn't found
                         except Exception as e:
-                            print("")
-                            # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
-                except Exception as e: print("here ", e)
+                            # print("")
+                            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT SEND PIECE EMPTY: {e}"}\033[0m")
+                except Exception as e: 
+                    if TEST:
+                        print(e)
                 # elif ("REQUEST_PIECES" in request):
                 #     pass
             elif "REQUEST_PIECES" in request:
@@ -125,15 +135,16 @@ class P2PUploader:
                     # client_socket.send(",".join(map(str, piece_indices)).encode("utf-8"))
                     client_socket.send(",".join(map(str, downloaded)).encode("utf-8"))
                 except Exception as e:
-                    print("")
-                    # print(f"\033[1;31m{f"ERROR IN READ STATUS (UPLOAD): {e}"}\033[0m")        
+                    # print("")
+                    print(f"\033[1;31m{f"ERROR IN READ STATUS (UPLOAD): {e}"}\033[0m")        
             # client_socket.close()
             # self.connected.pop(addr)
             else:
-                print("else")
+                if TEST:
+                    print("else")
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT: {e}"}\033[0m")
         finally:
             # print("close")
             # client_socket.close()
@@ -141,8 +152,8 @@ class P2PUploader:
                 if self.connected[addr[0]]:
                     self.connected.pop(addr[0])
             except Exception as e:
-                print("")
-                # print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT REMOVE: {e}"}\033[0m")
+                # print("")
+                print(f"\033[1;31m{f"ERROR IN HANDLE CLIENT REMOVE: {e}"}\033[0m")
         
     def stop(self):
         self.running = False
@@ -151,8 +162,8 @@ class P2PUploader:
             stop_socket = socket.create_connection((self.host, self.port))
             stop_socket.close()
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN STOP: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN STOP: {e}"}\033[0m")
     
     def reEvaluteTopPeersBody(self):
         if (not self.running) or (not len(self.connected)):
@@ -179,8 +190,8 @@ class P2PUploader:
                 sortedFirstPriority = sorted(firstPriority.items(), key = lambda item : item[1], reverse = True)
                 self.unchoke = [peer[0] for peer in sortedFirstPriority[: MAX_REGULAR_UNCHOKE]]
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN REEVALUTE BODY: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN REEVALUTE BODY: {e}"}\033[0m")
 
     def reEvaluteTopPeers(self):
         try:
@@ -193,8 +204,8 @@ class P2PUploader:
                 t.join()
                 t = threading.Timer(REGULAR_UNCHOKE, self.reEvaluteTopPeersBody)
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN REEVALUTE: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN REEVALUTE: {e}"}\033[0m")
 
     def optimisticallyUnchokeBody(self):
         if not self.running:
@@ -207,8 +218,8 @@ class P2PUploader:
                     pass
                 self.unchoke.append(randomPeer)
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY BODY: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY BODY: {e}"}\033[0m")
             
     def optimisticallyUnchoke(self):
         try:
@@ -221,8 +232,8 @@ class P2PUploader:
                 t.join()
                 t = threading.Timer(OPTIMISTICALLY_UNCHOKE, self.optimisticallyUnchokeBody)
         except Exception as e:
-            print("")
-            # print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY: {e}"}\033[0m")
+            # print("")
+            print(f"\033[1;31m{f"ERROR IN OPTIMISTICALLY: {e}"}\033[0m")
     
     def updateDownloadRateForPeer(self, addr, rate = 0):
         if addr in self.connected:

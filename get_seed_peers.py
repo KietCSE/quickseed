@@ -9,7 +9,7 @@ from fetch_api import *
 from config import HOST
 from download import *
 from upload import *
-
+from config import TEST
 # list peers to connect 
 PeersList = []
 
@@ -87,8 +87,9 @@ def subscribe_worker(code):
             # PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
             PeersList = json.loads(PeersList)
             # for peer in PeersList: print((peer))
-            print(PeersList)
-            print(type(PeersList))
+            if TEST:
+                print(PeersList)
+                print(type(PeersList))
 
             # PeersList = list(filter(lambda x: str(x["peerId"]) != str(var.PEER_ID), PeersList))
 
@@ -127,8 +128,9 @@ async def get(code):
         # PeersList = json.loads(PeersList)
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
 
-        print(PeersList)
-        print(type(PeersList))
+        if TEST:
+            print(PeersList)
+            print(type(PeersList))
         
 
         Metainfo = response.get("metainfo")
@@ -140,9 +142,11 @@ async def get(code):
         if not os.path.exists(path_file):
             with open(path_file, 'w') as f:
                 f.write("[]")
-            print("dat tao file status")
+            if TEST:
+                print("Da tao file status")
         else: 
-            print("dat ton tai file status")
+            # print("dat ton tai file status")
+            print(f"\033[1;31m{'DA TON TAI FILE STATUS'}'\033[0m")
 
 
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
@@ -150,7 +154,8 @@ async def get(code):
         hashpieces = Metainfo["info"]["pieces"]
         ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
         # print(ListHashPeer)
-        print("You join successfully!")
+        # print("You join successfully!")
+        print(f"\033[1;34m{'YOU JOINED SUCCESSFULLY'}\033[0m")
 
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
@@ -178,16 +183,19 @@ async def seed(code):
     if (response.get("status")): 
         PeersList = response.get('peers')
         PeersList = [peer for peer in PeersList if isinstance(peer, dict) and str(peer.get("peerId")) != str(var.PEER_ID)]
-        print(PeersList)
+        if TEST:
+            print(PeersList)
 
-        print(type(PeersList))
+            print(type(PeersList))
         Metainfo = response.get('metainfo')
         # if BENCODE: Metainfo = decode_bencoded(Metainfo)
         # print(Metainfo)
         hashpieces = Metainfo["info"]["pieces"]
         ListHashPeer = [hashpieces[i:i + 40] for i in range(0, len(hashpieces), 40)]
         # print(ListHashPeer)
-        print("You join successfully!")
+        # print("You join successfully!")
+        print(f"\033[1;34m{'YOU JOINED SUCCESSFULLY'}\033[0m")
+
 
         # create a thread to listen to notification from tracker 
         subscribe_channel(code)
@@ -196,12 +204,3 @@ async def seed(code):
         threading.Thread(target=P2PUploader(metainfo=Metainfo, host="0.0.0.0", port=var.PORT, interested=PeersList).start).start()
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
-
-
-
-async def main(): 
-    # await get('e3f4b4aed9c346c76bab6afa60fd6d5198164797')
-    print(getLocalIP())
-
-if __name__ == '__main__':
-    asyncio.run(main()) 

@@ -172,16 +172,3 @@ async def ls(peerId):
             print(f"{file_name.ljust(file_name_width)} {hash_code.ljust(hash_code_width)} {time_save.ljust(time_save_width)}")
     else: 
         print(f"\033[1;31m{response.get('message')}\033[0m")
-
-
-
-async def main():
-    # path = input(">> ")
-    result, _ = create_metainfo('/home/tuankiet/Documents/CODE/sample-cli')
-    print(result)
-
-
-if __name__ == '__main__': 
-    asyncio.run(main())
-
-

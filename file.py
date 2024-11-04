@@ -4,7 +4,7 @@ from split import save_piece
 import json
 from datetime import datetime
 import get_seed_peers as gsp
-
+from config import TEST
 
 def time_transfer(time): 
     # Chuỗi thời gian ISO 8601
@@ -127,7 +127,8 @@ class File:
         """Ghi danh sách các piece đã tải xuống vào file trạng thái."""
         # target_dir = os.path.dirname(self.)  # Lấy đường dẫn thư mục của target_file
             # os.makedirs(target_dir, exist_ok=True)
-        print(f"\033[1;31m{gsp.PeersList}\033[0m")
+        if TEST:
+            print(f"\033[1;31m{gsp.PeersList}\033[0m")
         
         with open(self.status_file, "w") as f:
             downloaded = sorted(self.piece_idx_downloaded)
