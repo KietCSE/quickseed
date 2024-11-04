@@ -7,3 +7,4 @@ dict/
 current_state/
 target/
 *.bat
+status/
