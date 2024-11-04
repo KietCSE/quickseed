@@ -126,6 +126,8 @@ def split_file(index, file_path, output_dir, piece_size=PIECE_SIZE):
 def merge_files(input_dir, target_file):
     target_dir = os.path.dirname(target_file)  # Lấy đường dẫn thư mục của target_file
     # print(input_dir, target_file)
+    if TEST:
+        print(target_file)
     os.makedirs(target_dir, exist_ok=True) 
 
     # Lấy danh sách các file piece và sắp xếp theo thứ tự tên
@@ -214,7 +216,9 @@ def save_piece(data, index, creationDate, metainfo):
     for piece in files:
         max_piece = math.ceil(piece["length"] / int(metainfo['info']['pieceLength']))
         count_piece += max_piece
-        # print("xet trong ", count_piece)
+        if TEST:
+            print(index)
+            print("xet trong ", count_piece)
         try: 
             if (index <= count_piece): 
                 relative_path = SPLIT_CHAR.join(piece["path"])

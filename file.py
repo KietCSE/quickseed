@@ -59,7 +59,8 @@ class File:
         self.piece_size = meta_info['info']['pieceLength']
         self.files = meta_info["info"]['files']
         self.total_size = sum(file['length'] for file in self.files)
-        self.num_pieces = math.ceil(self.total_size / self.piece_size)
+        # self.num_pieces = sum(math.ceil(self.total_size / self.piece_size))
+        self.num_pieces = sum(math.ceil(file['length'] / self.piece_size) for file in self.files)
         self.piece_hash = meta_info['info']['pieces']
         self.creationDate = time_transfer(meta_info['creationDate'])
         # Lưu trữ danh sách các mảnh đã và chưa tải xuống
@@ -137,11 +138,15 @@ class File:
 
     def add_piece(self, piece: Piece):
         """Thêm mảnh dữ liệu vào file tương ứng trong thư mục."""
+        if TEST:
+            print('not down', self.piece_idx_not_downloaded)
         if piece.index in self.piece_idx_not_downloaded:
             self.pieces.append(piece)
             self.piece_idx_downloaded.append(piece.index)
             self.piece_idx_not_downloaded.remove(piece.index)
             # self.write_piece_to_file(piece)
+            if TEST:
+                print('save piece', piece.index, 'len:', len(piece.data))
             save_piece(data=piece.data, index=piece.index, creationDate=self.creationDate, metainfo=self.metainfo)
 
     def write_piece_to_file(self, piece: Piece):
