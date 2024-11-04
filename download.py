@@ -84,7 +84,8 @@ class P2PDownloader:
         sock.send("REQUEST_PIECES".encode("utf-8"))
         data = sock.recv(1024*1024)  # Giả định danh sách mảnh sẽ phù hợp với giới hạn này
         pieces_info = list(map(int, data.decode("utf-8").split(",")))
-        # print(pieces_info)
+        if TEST:
+            print('info', pieces_info)
         return pieces_info
     
     def collect_piece_availability(self):
@@ -97,6 +98,8 @@ class P2PDownloader:
 
                 # Thêm thông tin sở hữu mảnh của mỗi peer vào hàng đợi
                 for piece_index in peer_pieces:
+                    if TEST:
+                        print(piece_index, peer)
                     self.piece_queue.add_piece(piece_index, peer)
 
             except Exception as e:
@@ -110,11 +113,15 @@ class P2PDownloader:
         # for piece_count, piece_index in self.piece_queue.piece_queue:
         #     piece_info = self.piece_queue.piece_info_dict[piece_index]
         #     print(piece_info)
+        if TEST:
+            print('queue', self.piece_queue)
 
 
     def download_piece(self, sock, piece_index):
         sock.send(f"REQUEST_PIECE::{piece_index}".encode("utf-8"))
         data = handle_client(sock)
+        if TEST:
+            print('handle_client', len(data))
         return data
 
     def verify_piece(self, piece_data, piece_index):
@@ -140,17 +147,23 @@ class P2PDownloader:
                 # print(f"Piece:{piece_index}",peer)
                 sock = self.connect_to_peer(peer)
                 piece_data = self.download_piece(sock, piece_index)
+                if TEST:
+                    print('here', piece_index, len(piece_data))
 
                 if self.verify_piece(piece_data, piece_index):
                     with self.lock:
                         progress_bar.update(len(piece_data))
                         progress_bar.refresh()
                         piece = Piece(piece_data, piece_index)
+                        if TEST:
+                            print('dd', piece_index, len(piece_data))
                         self.file.add_piece(piece)
                         self.downloaded_data += len(piece_data)
                         piece_verified = True
 
                         self.file.save_downloaded_status()
+                        if TEST:
+                            print('idx', self.file.piece_idx_downloaded)
                         sock.close()
             except Exception as e:
                 # print(f"Error downloading piece {piece_index} from {peer}: {e}")
@@ -160,6 +173,8 @@ class P2PDownloader:
             # Nếu mảnh không hợp lệ, đưa lại vào hàng đợi để thử tải lại
             if not piece_verified:  
                 with self.lock:
+                    if TEST:
+                        print('verified', piece_index)
                     self.piece_queue.add_piece(piece_index, peer)
 
 
