@@ -110,6 +110,7 @@ class P2PUploader:
                     if piece_data:
                         try:
                             data = package_data(piece_data, piece_index)
+                            if TEST: print("pack:", len(data))
                             client_socket.send(data)
                         except Exception as e:
                             # print("")
