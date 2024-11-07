@@ -56,6 +56,8 @@ python main.py
  ┣ 📄 show.py                       # show command 
  ┣ 📄 upload.py                     # Upload algorithm 
  ┣ 📄 download.py                   # download handler
+ ┣ 📄 split.py                      # split, merge, get piece, save piece
+ ┣ 📄 makeChoice.py                 # rarest first 
  ┣ 📄 state.py                      # current state of peer              
  ┣ 📄 requirement.txt               # all libraries and version for this program  
  ┗ 📜 main.py                       # main file to run program
