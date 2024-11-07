@@ -9,8 +9,6 @@ Build a simple CLI torrent-app for P2P file sharing
     - ls                  : List all your published documents 
     - seed    <code>      : Start sharing your documents 
     - get     <code>      : Start downloading documents
-    - stop    <code>      : Stop downloading/sharing documents 
-    - show                : Show all progress of download
     - peers   <code>      : List all peers you are connecting 
     - scrape  <code>      : Check currrent infomation of torrent network
     - help                : Display available commands
