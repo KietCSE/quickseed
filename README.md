@@ -26,8 +26,10 @@ First, you go to **dist** folder, double click on *window.exe* if you are on Win
 3. Using 'add' command to start seeding, share your magnet code for your friend so they can get your document.
 ![Add command](./public/add.png)
 4. On another computer in the same LAN network, people using 'get' command to get document with magnet code
-![Add command](./public/add.png)
+![Add command](./public/get.jpg)
 5. The document transfers successfully and is stored in './dist/dist'
+6. You can use other command to check torrent network 
+![Add command](./public/peers.png)
 
 
 ## Virtual environment setup and run project
