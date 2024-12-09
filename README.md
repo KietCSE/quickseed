@@ -1,6 +1,6 @@
 # Torrent-app
 
-Build a simple CLI torrent-app for P2P file sharing
+Build and developed a CLI torrent app enabling simultaneous file sharing and downloading. Files were split into multiple pieces and distributed concurrently across clients in the network. This repo associate with tracker repo. 
 
 ## Available Commands:
     -------------------------
