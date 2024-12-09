@@ -9,8 +9,6 @@ Build and developed a CLI torrent app enabling simultaneous file sharing and dow
     - ls                  : List all your published documents 
     - seed    <code>      : Start sharing your documents 
     - get     <code>      : Start downloading documents
-    - stop    <code>      : Stop downloading/sharing documents 
-    - show                : Show all progress of download
     - peers   <code>      : List all peers you are connecting 
     - scrape  <code>      : Check currrent infomation of torrent network
     - help                : Display available commands
@@ -70,6 +68,8 @@ python main.py
  ┣ 📄 show.py                       # show command 
  ┣ 📄 upload.py                     # Upload algorithm 
  ┣ 📄 download.py                   # download handler
+ ┣ 📄 split.py                      # split, merge, get piece, save piece
+ ┣ 📄 makeChoice.py                 # rarest first 
  ┣ 📄 state.py                      # current state of peer              
  ┣ 📄 requirement.txt               # all libraries and version for this program  
  ┗ 📜 main.py                       # main file to run program
