@@ -1,6 +1,6 @@
 # Torrent-app
 
-Build a simple CLI torrent-app for P2P file sharing
+Build and developed a CLI torrent app enabling simultaneous file sharing and downloading. Files were split into multiple pieces and distributed concurrently across clients in the network. This repo associate with tracker repo.
 
 ## Available Commands:
     -------------------------
@@ -18,6 +18,16 @@ Build a simple CLI torrent-app for P2P file sharing
     - logout              : Log out your account 
     - exit                : Exit the program
 
+
+## User manual
+First, you go to **dist** folder, double click on *window.exe* if you are on Window or run command *./linux* if you are on Linux
+1. Login or create your account 
+2. Copy link of your document you want to share 
+3. Using 'add' command to start seeding, share your magnet code for your friend so they can get your document.
+![Add command](./public/add.png)
+4. On another computer in the same LAN network, people using 'get' command to get document with magnet code
+![Add command](./public/add.png)
+5. The document transfers successfully and is stored in './dist/dist'
 
 
 ## Virtual environment setup and run project
